@@ -24,16 +24,16 @@ MonoBehaviour:
     passiveHealth: 0
     passiveMoney: 0
   - bloodSugarDelta: 0
-    healthDelta: 0
-    moodDelta: 0
+    healthDelta: 15
+    moodDelta: 10
     moneyDelta: 0
-    upgradeCost: 0
+    upgradeCost: 800
     passiveBloodSugar: 0
     passiveHealth: 0
     passiveMoney: 0
   - bloodSugarDelta: 0
-    healthDelta: 0
-    moodDelta: 0
+    healthDelta: 25
+    moodDelta: 15
     moneyDelta: 0
     upgradeCost: 0
     passiveBloodSugar: 0

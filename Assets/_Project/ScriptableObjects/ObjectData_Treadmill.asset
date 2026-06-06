@@ -17,23 +17,23 @@ MonoBehaviour:
   levels:
   - bloodSugarDelta: -15
     healthDelta: 5
-    moodDelta: -5
+    moodDelta: -10
     moneyDelta: 0
     upgradeCost: 400
     passiveBloodSugar: 0
     passiveHealth: 0
     passiveMoney: 0
-  - bloodSugarDelta: 0
-    healthDelta: 0
-    moodDelta: 0
+  - bloodSugarDelta: -22
+    healthDelta: 10
+    moodDelta: -7
     moneyDelta: 0
-    upgradeCost: 0
+    upgradeCost: 1000
     passiveBloodSugar: 0
     passiveHealth: 0
     passiveMoney: 0
-  - bloodSugarDelta: 0
-    healthDelta: 0
-    moodDelta: 0
+  - bloodSugarDelta: -30
+    healthDelta: 17
+    moodDelta: -4
     moneyDelta: 0
     upgradeCost: 0
     passiveBloodSugar: 0
