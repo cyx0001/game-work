@@ -1,0 +1,21 @@
+# Visual Studio
+.vs/
+*.csproj
+*.sln.docstates
+*.user
+
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+
+# Auto-generated
+UserSettings/
+
+# OS
+.DS_Store
+Thumbs.db
