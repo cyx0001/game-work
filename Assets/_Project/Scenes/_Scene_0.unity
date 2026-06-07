@@ -2189,6 +2189,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectData: {fileID: 11400000, guid: 900f198e9e3c2774ba33e6af9bf43791, type: 2}
+  launchTreadmillMinigame: 0
   currentLevel: 1
 --- !u!1 &567509854
 GameObject:
@@ -3018,6 +3019,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentDay: 1
   remainingAP: 5
+  isInMinigame: 0
   OnAPChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -3222,6 +3224,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectData: {fileID: 11400000, guid: 8b84d90e2f0563b4abdce1e34dcf1cec, type: 2}
+  launchTreadmillMinigame: 1
   currentLevel: 1
 --- !u!1 &894501080
 GameObject:
