@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e9952e54a3d4e18a38dea6034fcf297, type: 3}
+  m_Name: DailyEventPool_AllEvents
+  m_EditorClassIdentifier: 
+  events:
+  - {fileID: 11400000, guid: 88c6359ef1c28ef4e859caf51cbb7c6d, type: 2}
+  - {fileID: 11400000, guid: a1b2c3d4e5f6478901234a5678abcdef, type: 2}
+  - {fileID: 11400000, guid: b2c3d4e5f6478901234b5678abcdef01, type: 2}
+  - {fileID: 11400000, guid: c3d4e5f6789012345678c90123456789, type: 2}
+  - {fileID: 11400000, guid: 7b3113725a60490a832f9038b1a46f90, type: 2}
+  - {fileID: 11400000, guid: 5d5122a490cf4fd6b2a28bec761d8743, type: 2}
+  - {fileID: 11400000, guid: dc16cca42c2245828f915b422e091e73, type: 2}
+  - {fileID: 11400000, guid: d1c8667e4dca4382a5cdf1e7f89728e9, type: 2}
+  - {fileID: 11400000, guid: ccdaa711839541fda7aab952866aa899, type: 2}
+  - {fileID: 11400000, guid: a369629181fd42f88558809377e32a66, type: 2}

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1c35b3b1f31a742b05fdea48bf7ffd, type: 3}
+  m_Name: Event_BirthdayCake
+  m_EditorClassIdentifier: 
+  eventID: 3
+  eventDescription: "\u90E8\u95E8\u540C\u4E8B\u751F\u65E5\uFF0C\u5927\u5BB6\u56F4\u7740\u751C\u70B9\u5207\u86CB\u7CD5\u3002\u6240\u6709\u4EBA\u90FD\u671B\u5411\u4F60\uFF0C\u671F\u5F85\u4F60\u4E5F\u6765\u4E00\u5757\u3002"
+  optionAText: "\u5403\u4E00\u5757\uFF0C\u4E0D\u8BA9\u540C\u4E8B\u5931\u671B"
+  sugarDeltaA: 35
+  healthDeltaA: -3
+  moodDeltaA: 18
+  moneyDeltaA: 0
+  optionBText: "\u53EA\u5403\u6700\u5C0F\u7684\u4E00\u5757\uFF0C\u5176\u4F59\u62D2\u7EDD"
+  sugarDeltaB: 12
+  healthDeltaB: 0
+  moodDeltaB: -5
+  moneyDeltaB: 0

@@ -15,8 +15,10 @@ public class GameManager : MonoBehaviour
 
     [HideInInspector] public UnityEvent OnAPChanged = new UnityEvent();
 
-    [Header("�������¼�")]
-    public EventData testEvent;
+    [Header("每日随机事件")]
+    public DailyEventPool dailyEventPoolAsset;
+
+    private int lastEventIndex = -1;
 
     private void Awake()
     {
@@ -26,13 +28,11 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        // ÿ�γ���������Ӳ��ȷ����ֵ�ɾ���λ
         currentDay = 1;
-        remainingAP = 5;
+        remainingAP = GameConstants.DAILY_AP;
         OnAPChanged.Invoke();
     }
 
-    // ���������ж���
     public bool UseAP(int amount)
     {
         if (remainingAP >= amount)
@@ -51,8 +51,23 @@ public class GameManager : MonoBehaviour
 
     public void EndDay()
     {
+        if (ThresholdEventManager.Instance != null)
+        {
+            ThresholdEventManager.Instance.ProcessNightSettlement(FinishEndDay);
+            return;
+        }
+
+        FinishEndDay();
+    }
+
+    private void FinishEndDay()
+    {
         currentDay++;
-        remainingAP = 5; // �����ж���
+
+        int apPenalty = ThresholdEventManager.Instance != null
+            ? ThresholdEventManager.Instance.ConsumeNextDayApPenalty()
+            : 0;
+        remainingAP = Mathf.Max(0, GameConstants.DAILY_AP - apPenalty);
         OnAPChanged.Invoke();
 
         // ÿ�ν�����һ�죬�ȼ���Ƿ�����ͨ��Ҫ�󣨱���Ź�14�죩
@@ -66,10 +81,51 @@ public class GameManager : MonoBehaviour
             );
         }
 
-        // ��������¼�����
-        if (testEvent != null && EventPopupController.Instance != null && !GameResultManager.Instance.gameOverPanel.activeSelf && !GameResultManager.Instance.gameWinPanel.activeSelf)
+        TriggerDailyRandomEvent();
+    }
+
+    private void TriggerDailyRandomEvent()
+    {
+        if (EventPopupController.Instance == null || GameResultManager.Instance == null)
+            return;
+
+        if (GameResultManager.Instance.gameOverPanel.activeSelf || GameResultManager.Instance.gameWinPanel.activeSelf)
+            return;
+
+        EventData dailyEvent = PickRandomDailyEvent();
+        if (dailyEvent != null)
         {
-            EventPopupController.Instance.DisplayEvent(testEvent);
+            EventPopupController.Instance.DisplayEvent(dailyEvent);
         }
+    }
+
+    private EventData[] GetValidEvents()
+    {
+        if (dailyEventPoolAsset == null || dailyEventPoolAsset.events == null)
+            return System.Array.Empty<EventData>();
+
+        return System.Array.FindAll(dailyEventPoolAsset.events, e => e != null);
+    }
+
+    private EventData PickRandomDailyEvent()
+    {
+        EventData[] validEvents = GetValidEvents();
+        if (validEvents.Length == 0)
+            return null;
+
+        if (validEvents.Length == 1)
+        {
+            lastEventIndex = 0;
+            return validEvents[0];
+        }
+
+        int index;
+        do
+        {
+            index = Random.Range(0, validEvents.Length);
+        } while (index == lastEventIndex);
+
+        lastEventIndex = index;
+        return validEvents[index];
     }
 }

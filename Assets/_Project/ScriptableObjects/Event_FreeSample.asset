@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1c35b3b1f31a742b05fdea48bf7ffd, type: 3}
+  m_Name: Event_FreeSample
+  m_EditorClassIdentifier: 
+  eventID: 5
+  eventDescription: "\u5546\u573A\u91CC\u6709\u54C1\u724C\u5728\u505A\u63A8\u5E7F\uFF0C\u514D\u8D39\u8BD5\u5403\u7684\u5C0F\u86CB\u7CD5\u548C\u66F2\u5947\u6392\u7740\u957F\u961F\u3002\u987A\u8DEF\u62FF\u4E00\u4E2A\u5E94\u8BE5\u6CA1\u5173\u7CFB\u5427\uFF1F"
+  optionAText: "\u6392\u961F\u9886\u4E00\u4EFD\uFF0C\u4E0D\u5403\u767D\u4E0D\u5403"
+  sugarDeltaA: 30
+  healthDeltaA: -4
+  moodDeltaA: 12
+  moneyDeltaA: 0
+  optionBText: "\u76F4\u63A5\u8D70\u8FC7\uFF0C\u4E0D\u770B\u7740\u5C31\u4E0D\u60F3\u5403"
+  sugarDeltaB: 0
+  healthDeltaB: 1
+  moodDeltaB: -3
+  moneyDeltaB: 0
