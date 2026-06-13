@@ -24,7 +24,7 @@ public class UpgradePopupController : MonoBehaviour
         if (closeButton != null) closeButton.onClick.AddListener(ClosePanel);
     }
 
-    // 核心方法：外部物件点击“升级”时调用，传入物件组件
+    // 核心方法：外部物件点击"升级"时调用，传入物件组件
     public void OpenUpgradePanel(InteractableObject obj)
     {
         if (obj == null || obj.objectData == null) return;
@@ -98,11 +98,24 @@ public class UpgradePopupController : MonoBehaviour
             PlayerDataManager.Instance.ModifyStats(0, 0, 0, -currentData.upgradeCost);
         }
 
-        // 2. 物件等级 +1
+        // 2. 升级目标物件
         targetObject.currentLevel++;
         Debug.Log($"【系统升级】{targetObject.objectData.displayName} 成功升级至 Lv.{targetObject.currentLevel}！");
 
-        // 3. 刷新面板（或者直接关闭面板）
+        // 3. 同步升级所有关联物件
+        if (targetObject.linkedObjects != null && targetObject.linkedObjects.Length > 0)
+        {
+            foreach (InteractableObject linkedObj in targetObject.linkedObjects)
+            {
+                if (linkedObj != null && linkedObj.currentLevel < targetObject.currentLevel)
+                {
+                    linkedObj.currentLevel = targetObject.currentLevel;
+                    Debug.Log($"【联动升级】{linkedObj.objectData.displayName} 同步升级至 Lv.{linkedObj.currentLevel}！");
+                }
+            }
+        }
+
+        // 4. 刷新面板（或者直接关闭面板）
         RefreshUI();
     }
 

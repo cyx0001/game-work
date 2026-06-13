@@ -4,13 +4,30 @@ using UnityEngine;
 
 public class InteractionDetector : MonoBehaviour
 {
+    private InteractableObject lastHoveredObject;
+
     void Update()
     {
-        // ���İ�ȫɡ��ֻ�е���Ϸû�б���ͣ��û�е���������û�н�ICU��ͨ�أ�ʱ�������κε��
+        // 安全伞：只有当游戏没有被暂停、没有进入跑步机、没有进ICU/通关时，才处理任何点击
         if (Time.timeScale == 0f) return;
         if (GameManager.Instance != null && GameManager.Instance.isInMinigame) return;
 
-        // 1. ��������ִ������������ܣ�ʹ�ô��̡��ܲ����������ȣ�
+        // ===== 悬停高亮检测 =====
+        InteractableObject currentHovered = GetInteractableObjectAtMouse();
+
+        // 鼠标移入新物体 → 旧物体取消高亮，新物体高亮
+        if (currentHovered != lastHoveredObject)
+        {
+            if (lastHoveredObject != null)
+                lastHoveredObject.SetHighlight(false);
+
+            if (currentHovered != null)
+                currentHovered.SetHighlight(true);
+
+            lastHoveredObject = currentHovered;
+        }
+
+        // 1. 左键点击 → 执行目标物体的功能（使用键盘、跑步机、睡觉等）
         if (Input.GetMouseButtonDown(0))
         {
             InteractableObject clickableObj = GetInteractableObjectAtMouse();
@@ -20,19 +37,19 @@ public class InteractionDetector : MonoBehaviour
             }
         }
 
-        // 2. �Ҽ�����������������������壡
+        // 2. 右键 → 弹出升级面板
         if (Input.GetMouseButtonDown(1))
         {
             InteractableObject clickableObj = GetInteractableObjectAtMouse();
             if (clickableObj != null && UpgradePopupController.Instance != null)
             {
-                // ��������壬����������崫��ȥ
+                // 打开升级面板，把具体物件传进去
                 UpgradePopupController.Instance.OpenUpgradePanel(clickableObj);
             }
         }
     }
 
-    // ��װһ�����õ���ȡ���������ķ������ô�����ɾ�
+    // 封装一个复用型的获取鼠标下物体的方法，供各处调用保持干净
     private InteractableObject GetInteractableObjectAtMouse()
     {
         Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);

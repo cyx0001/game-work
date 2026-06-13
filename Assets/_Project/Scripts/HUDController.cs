@@ -31,7 +31,14 @@ public class HUDController : MonoBehaviour
         if (endDayButton != null)
         {
             endDayButton.onClick.RemoveAllListeners(); // 防重复绑定
-            endDayButton.onClick.AddListener(() => GameManager.Instance.EndDay());
+            endDayButton.onClick.AddListener(() =>
+            {
+                EnsureSleepFadeController();
+                SleepFadeController.Instance.PlaySleepTransition(() =>
+                {
+                    GameManager.Instance.EndDay();
+                });
+            });
         }
 
         if (PlayerDataManager.Instance != null)
@@ -85,5 +92,14 @@ public class HUDController : MonoBehaviour
         else if (gm.currentDay > 5) phaseStr = "危机期";
 
         dayText.text = $"第 {gm.currentDay} 天 ({phaseStr})";
+    }
+
+    private void EnsureSleepFadeController()
+    {
+        if (SleepFadeController.Instance == null)
+        {
+            GameObject go = new GameObject("SleepFadeController");
+            go.AddComponent<SleepFadeController>();
+        }
     }
 }
