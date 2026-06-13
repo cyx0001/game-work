@@ -22,15 +22,50 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        // �ɾ��ĳ������������� DontDestroyOnLoad
+        // 经典单例模式：无需 DontDestroyOnLoad
         Instance = this;
+
+#if UNITY_EDITOR
+        // 编辑器中每次运行自动清除游戏记录，确保测试每次从零开始
+        PlayerPrefs.DeleteAll();
+        PlayerPrefs.Save();
+        Debug.Log("[Editor] 已清除所有 PlayerPrefs，测试环境已重置");
+#endif
     }
+
+    private const string TUTORIAL_PREF_KEY = "Tutorial_Shown";
 
     private void Start()
     {
         currentDay = 1;
         remainingAP = GameConstants.DAILY_AP;
         OnAPChanged.Invoke();
+
+        // 首次运行显示主场景操作教程（延迟一帧确保所有单例就绪）
+        StartCoroutine(ShowMainTutorialIfNeeded());
+    }
+
+    private IEnumerator ShowMainTutorialIfNeeded()
+    {
+        yield return null; // 等一帧，确保 EventPopupController 等初始化完成
+
+        if (PlayerPrefs.GetInt(TUTORIAL_PREF_KEY, 0) == 0)
+        {
+            if (EventPopupController.Instance != null)
+            {
+                EventPopupController.Instance.DisplayNotice(
+                    InteractableObject.TUTORIAL_MESSAGE, "知道了", () =>
+                    {
+                        PlayerPrefs.SetInt(TUTORIAL_PREF_KEY, 1);
+                        PlayerPrefs.Save();
+                    });
+            }
+            else
+            {
+                PlayerPrefs.SetInt(TUTORIAL_PREF_KEY, 1);
+                PlayerPrefs.Save();
+            }
+        }
     }
 
     public bool UseAP(int amount)

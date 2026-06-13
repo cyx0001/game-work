@@ -41,6 +41,19 @@ public class TreadmillSceneController : MonoBehaviour
     // 分别存储 3 个轨道里当前存活的音符列表
     private List<SimpleNote>[] laneNotes = new List<SimpleNote>[3];
 
+    // 跑步机首次教程
+    private const string TREADMILL_TUTORIAL_KEY = "Tutorial_Treadmill_Shown";
+    public const string TREADMILL_TUTORIAL_MSG =
+        "<b>跑步机小游戏</b>\n\n" +
+        "<b>[操作]</b>\n" +
+        "  A/S/D 或 左/下/右方向键 -- 击打三个轨道音符\n" +
+        "  1 / 2 -- 减速 / 加速音符下落\n\n" +
+        "<b>[判定]</b>\n" +
+        "  音符到达底部判定线时按键，越近分越高\n" +
+        "  完美 +10  |  一般 +5  |  失误 +0\n\n" +
+        "<b>[评分]</b>  S>=120  |  A>=70  |  B>=30  |  C<30\n" +
+        "  评分越高，运动效果越好！";
+
     void Awake()
     {
         // 初始化3个轨道的列表容器
@@ -59,10 +72,79 @@ public class TreadmillSceneController : MonoBehaviour
         timerText.text = $"时间: {totalGameTime:F1}s";
         UpdateSpeedUI();
         
-        resultCloseButton.onClick.AddListener(() => { resultPanel.SetActive(false); });
+        resultCloseButton.onClick.AddListener(OnResultClose);
 
-        // 启动整局游戏流程
+        // 延迟一帧显示教程，确保场景 Canvas 和所有 UI 都已就绪
+        StartCoroutine(ShowTutorialIfNeeded());
+    }
+
+    private IEnumerator ShowTutorialIfNeeded()
+    {
+        yield return null; // 等一帧
+
+        if (PlayerPrefs.GetInt(TREADMILL_TUTORIAL_KEY, 0) == 0)
+        {
+            if (EventPopupController.Instance != null)
+            {
+                EventPopupController.Instance.DisplayNotice(TREADMILL_TUTORIAL_MSG, "准备好了！", () =>
+                {
+                    PlayerPrefs.SetInt(TREADMILL_TUTORIAL_KEY, 1);
+                    PlayerPrefs.Save();
+                    StartCoroutine(GameFlowRoutine());
+                });
+                yield break;
+            }
+            PlayerPrefs.SetInt(TREADMILL_TUTORIAL_KEY, 1);
+            PlayerPrefs.Save();
+        }
+
+        // 无需教程 → 直接启动游戏
         StartCoroutine(GameFlowRoutine());
+    }
+
+    /// <summary>
+    /// 结算面板关闭时：应用属性 → 消耗AP → 标记已通关 → 返回主场景
+    /// </summary>
+    private void OnResultClose()
+    {
+        resultPanel.SetActive(false);
+
+        // 1. 根据得分计算属性倍率
+        float multiplier;
+        if (score >= 120) multiplier = 1.5f;
+        else if (score >= 70) multiplier = 1.0f;
+        else if (score >= 30) multiplier = 0.7f;
+        else multiplier = 0.4f;
+
+        // 2. 从源物件获取基准属性数据
+        InteractableObject src = TreadmillSceneLauncher.SourceObject;
+        if (src != null)
+        {
+            LevelData data = src.GetCurrentLevelData();
+            if (PlayerDataManager.Instance != null)
+            {
+                PlayerDataManager.Instance.ModifyStats(
+                    data.bloodSugarDelta * multiplier,
+                    data.healthDelta * multiplier,
+                    data.moodDelta * multiplier,
+                    Mathf.RoundToInt(data.moneyDelta * multiplier)
+                );
+            }
+
+            // 3. 消耗行动点
+            if (GameManager.Instance != null)
+                GameManager.Instance.UseAP(1);
+
+            // 4. 标记该等级已通关（用于跳过功能）
+            src.MarkLevelCleared();
+
+            // 5. 写入桥接数据（供其他系统读取）
+            TreadmillGameBridge.Output_Score = score;
+            TreadmillGameBridge.IsDataReady = true;
+        }
+
+        // 6. 返回主场景
+        TreadmillSceneLauncher.ReturnToMain();
     }
 
     void Update()

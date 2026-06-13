@@ -34,6 +34,10 @@ public class InteractableObject : MonoBehaviour
     public string promptText = "按空格键 睡觉";
     public TMPro.TMP_FontAsset promptFont;
 
+    [Header("跳过设置")]
+    [Tooltip("是否允许该物件在当前等级已通关后跳过小游戏")]
+    public bool allowSkip = true;
+
     // 内部引用
     private SpriteRenderer spriteRenderer;
     private GameObject highlightChild;
@@ -46,6 +50,9 @@ public class InteractableObject : MonoBehaviour
     private GameObject promptChild;
     private TextMeshProUGUI promptTMP;
     private bool playerInRange = false;
+
+    // 交互状态锁（防止弹窗期间重复触发）
+    private bool isWaitingForPopup = false;
 
     private void Awake()
     {
@@ -259,18 +266,63 @@ public class InteractableObject : MonoBehaviour
 
     // ==================== 交互逻辑 ====================
 
-    public void ExecuteAction()
-    {
-        // 小游戏跳转
-        if (launchMinigame)
-        {
-            if (minigameSceneName == "Treadmill")
-                TreadmillSceneLauncher.Launch(this);
-            else if (minigameSceneName == "Kitchen")
-                KitchenSceneLauncher.Launch(this);
-            return;
-        }
+    /// <summary>新手指南内容（仅基础操作）</summary>
+    public const string TUTORIAL_MESSAGE =
+        "<b>欢迎来到《血糖控制专家》！</b>\n\n" +
+        "<b>[移动]</b>  WASD 或 方向键\n\n" +
+        "<b>[交互]</b>\n" +
+        "  走近物体按 <b>空格键</b> 或 <b>鼠标左键</b>\n" +
+        "  <b>鼠标右键</b>点击物体查看升级面板\n\n" +
+        "<b>[行动点]</b>  每天 5 点 AP，合理安排！\n\n" +
+        "<b>[目标]</b>  14 天内将血糖控制在 70~120 的安全范围。";
 
+    /// <summary>获取该物件当前等级的通关记录 PlayerPrefs Key</summary>
+    private string GetClearKey()
+    {
+        string objName = objectData != null ? objectData.objectName : gameObject.name;
+        return $"Skip_{objName}_Lv{currentLevel}";
+    }
+
+    /// <summary>当前等级是否已通关（可跳过）</summary>
+    public bool IsLevelCleared()
+    {
+        return PlayerPrefs.GetInt(GetClearKey(), 0) == 1;
+    }
+
+    /// <summary>标记当前等级已通关（由小游戏完成时调用）</summary>
+    public void MarkLevelCleared()
+    {
+        PlayerPrefs.SetInt(GetClearKey(), 1);
+        PlayerPrefs.Save();
+    }
+
+#if UNITY_EDITOR
+    [ContextMenu("清除本物件所有跳过记录")]
+    private void ClearAllSkipRecords()
+    {
+        for (int lv = 1; lv <= 3; lv++)
+        {
+            string objName = objectData != null ? objectData.objectName : gameObject.name;
+            PlayerPrefs.DeleteKey($"Skip_{objName}_Lv{lv}");
+        }
+        PlayerPrefs.Save();
+        Debug.Log($"[{gameObject.name}] 已清除全部跳过记录");
+    }
+
+    [ContextMenu("清除所有教程/跳过记录（全局）")]
+    private void ClearAllGlobalRecords()
+    {
+        PlayerPrefs.DeleteAll();
+        PlayerPrefs.Save();
+        Debug.Log("[全局] 已清除所有 PlayerPrefs 记录");
+    }
+#endif
+
+    /// <summary>
+    /// 直接执行属性应用（跳过小游戏时使用）
+    /// </summary>
+    private void ExecuteActionDirect()
+    {
         if (GameManager.Instance == null || !GameManager.Instance.UseAP(1))
             return;
 
@@ -287,6 +339,70 @@ public class InteractableObject : MonoBehaviour
             ApplyStats();
             StartCoroutine(ClickFeedbackAnimation());
         }
+    }
+
+    public void ExecuteAction()
+    {
+        // 弹窗等待中 → 拒绝重复交互
+        if (isWaitingForPopup) return;
+
+        ExecuteActionInternal();
+    }
+
+    /// <summary>实际交互逻辑（含跳过判断）</summary>
+    private void ExecuteActionInternal()
+    {
+        // 小游戏跳转
+        if (launchMinigame)
+        {
+            // 检查是否可跳过（已通关 + 允许跳过）
+            if (allowSkip && IsLevelCleared())
+            {
+                ShowSkipPopup();
+                return;
+            }
+
+            // 未通关 → 强制进入小游戏
+            LaunchMinigame();
+            return;
+        }
+
+        // 非小游戏物件 → 直接扣AP并应用属性
+        ExecuteActionDirect();
+    }
+
+    /// <summary>显示「跳过 / 再次挑战」选择弹窗</summary>
+    private void ShowSkipPopup()
+    {
+        isWaitingForPopup = true;
+
+        if (EventPopupController.Instance == null)
+        {
+            // 无弹窗系统时直接走跳过逻辑
+            isWaitingForPopup = false;
+            ExecuteActionDirect();
+            return;
+        }
+
+        string objDisplayName = objectData != null ? objectData.displayName : gameObject.name;
+        string message = $"<b>{objDisplayName} Lv.{currentLevel}</b> 小游戏已通关！\n\n你可以选择再次挑战或直接跳过以获得属性加成。";
+
+        EventPopupController.Instance.DisplayChoice(
+            message,
+            "再次挑战",
+            "跳过（直接应用属性）",
+            onA: () => { isWaitingForPopup = false; LaunchMinigame(); },
+            onB: () => { isWaitingForPopup = false; ExecuteActionDirect(); }
+        );
+    }
+
+    /// <summary>启动小游戏</summary>
+    private void LaunchMinigame()
+    {
+        if (minigameSceneName == "Treadmill")
+            TreadmillSceneLauncher.Launch(this);
+        else if (minigameSceneName == "Kitchen")
+            KitchenSceneLauncher.Launch(this);
     }
 
     private bool IsBed()

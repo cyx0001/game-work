@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,6 +37,20 @@ public class KitchenSceneManager : MonoBehaviour
     private FoodItem[,] board;
     private FoodItem firstSelected = null;
 
+    // 厨房首次教程
+    private const string KITCHEN_TUTORIAL_KEY = "Tutorial_Kitchen_Shown";
+    public const string KITCHEN_TUTORIAL_MSG =
+        "<b>厨房小游戏</b>\n\n" +
+        "<b>[操作]</b>\n" +
+        "  点击一块食物选中它\n" +
+        "  再点击上下左右相邻的食物交换位置\n" +
+        "  横向或竖向 >=3 个相同食物即可消除\n\n" +
+        "<b>[消除加成]</b>\n" +
+        "  3连消 -> 基础属性\n" +
+        "  4连消 -> 1.5倍\n" +
+        "  5连消 -> 2倍\n\n" +
+        "<b>[步数]</b>  共 10 步，规划好每一步！";
+
     void Start()
     {
         kitchenLevel = KitchenGameBridge.Input_KitchenLevel;
@@ -46,6 +61,36 @@ public class KitchenSceneManager : MonoBehaviour
         resultPanel.SetActive(false);
         btnConfirm.onClick.AddListener(ExitAndReturnToMainScene);
 
+        // 延迟一帧显示教程，确保场景 Canvas 和所有 UI 都已就绪
+        StartCoroutine(ShowTutorialIfNeeded());
+    }
+
+    private IEnumerator ShowTutorialIfNeeded()
+    {
+        yield return null; // 等一帧
+
+        if (PlayerPrefs.GetInt(KITCHEN_TUTORIAL_KEY, 0) == 0)
+        {
+            if (EventPopupController.Instance != null)
+            {
+                EventPopupController.Instance.DisplayNotice(KITCHEN_TUTORIAL_MSG, "开始烹饪！", () =>
+                {
+                    PlayerPrefs.SetInt(KITCHEN_TUTORIAL_KEY, 1);
+                    PlayerPrefs.Save();
+                    InitKitchen();
+                });
+                yield break;
+            }
+            PlayerPrefs.SetInt(KITCHEN_TUTORIAL_KEY, 1);
+            PlayerPrefs.Save();
+        }
+
+        InitKitchen();
+    }
+
+    /// <summary>初始化厨房棋盘（从 Start 中抽离，供教程回调使用）</summary>
+    private void InitKitchen()
+    {
         SetupGridByLevel();
         GenerateBoard();
         UpdateHUD();
@@ -244,6 +289,27 @@ public class KitchenSceneManager : MonoBehaviour
 
     private void ExitAndReturnToMainScene()
     {
-        SceneManager.LoadScene("_Scene_0"); 
+        // 1. 应用厨房小游戏产出的属性变化到玩家数据
+        if (PlayerDataManager.Instance != null)
+        {
+            PlayerDataManager.Instance.ModifyStats(
+                KitchenGameBridge.Output_SugarDelta,
+                KitchenGameBridge.Output_HealthDelta,
+                KitchenGameBridge.Output_MoodDelta,
+                0
+            );
+        }
+
+        // 2. 消耗行动点
+        if (GameManager.Instance != null)
+            GameManager.Instance.UseAP(1);
+
+        // 3. 标记该等级已通关（用于跳过功能）
+        InteractableObject src = KitchenSceneLauncher.SourceObject;
+        if (src != null)
+            src.MarkLevelCleared();
+
+        // 4. 使用 Additive 卸载方式返回主场景（保留主场景状态）
+        KitchenSceneLauncher.ReturnToMain();
     }
 }
