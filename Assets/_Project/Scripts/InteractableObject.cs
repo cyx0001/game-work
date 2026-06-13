@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,7 +30,7 @@ public class InteractableObject : MonoBehaviour
     public float interactRange = 2.5f;
     [TextArea]
     public string promptText = "按空格键 睡觉";
-    public TMPro.TMP_FontAsset promptFont; // 拖入 zpix SDF，支持中文
+    public TMPro.TMP_FontAsset promptFont;
 
     // 内部引用
     private SpriteRenderer spriteRenderer;
@@ -72,14 +72,10 @@ public class InteractableObject : MonoBehaviour
         col.isTrigger = true;
         col.radius = interactRange;
 
-        // 挂一个辅助脚本来通知父物体
         var relay = trig.AddComponent<TriggerRelay>();
         relay.parent = this;
     }
 
-    /// <summary>
-    /// 由 TriggerRelay 调用
-    /// </summary>
     public void OnPlayerEnterRange()
     {
         if (playerInRange) return;
@@ -100,7 +96,6 @@ public class InteractableObject : MonoBehaviour
 
     private void CreatePromptUI()
     {
-        // 查找或创建全局提示Canvas（Screen Space Overlay）
         Canvas promptCanvas = FindObjectOfType<Canvas>(false);
         if (promptCanvas == null)
         {
@@ -115,10 +110,8 @@ public class InteractableObject : MonoBehaviour
         promptChild.transform.SetParent(promptCanvas.transform);
         promptChild.transform.localPosition = Vector3.zero;
         promptChild.transform.localScale = Vector3.one;
-
         promptChild.AddComponent<RectTransform>();
 
-        // 背景
         GameObject bg = new GameObject("Bg");
         bg.transform.SetParent(promptChild.transform);
         RectTransform bgRect = bg.AddComponent<RectTransform>();
@@ -130,7 +123,6 @@ public class InteractableObject : MonoBehaviour
         UnityEngine.UI.Image bgImg = bg.AddComponent<UnityEngine.UI.Image>();
         bgImg.color = new Color(0, 0, 0, 0.7f);
 
-        // 文本
         GameObject txt = new GameObject("Text");
         txt.transform.SetParent(bg.transform);
         RectTransform txtRect = txt.AddComponent<RectTransform>();
@@ -146,17 +138,13 @@ public class InteractableObject : MonoBehaviour
         promptTMP.alignment = TextAlignmentOptions.Center;
         promptTMP.overflowMode = TextOverflowModes.Overflow;
         promptTMP.enableWordWrapping = false;
-        
+
         if (promptFont != null)
         {
             promptTMP.font = promptFont;
-            // 创建独立材质实例，避免影响其他文字
             promptTMP.fontMaterial = new Material(promptFont.material);
-            // 收紧面膨胀，减少模糊
-            promptTMP.fontMaterial.SetFloat("_FaceDilate", 0f);
-            // 降低轮廓柔化
+            promptTMP.fontMaterial.SetFloat("_FaceDilate", 0.15f);
             promptTMP.fontMaterial.SetFloat("_OutlineSoftness", 0f);
-            // 确保像素对齐
             promptTMP.fontMaterial.SetFloat("_GradientScale", 10f);
         }
 
@@ -167,16 +155,14 @@ public class InteractableObject : MonoBehaviour
 
     private void Update()
     {
-        // 跟踪屏幕位置
         if (promptChild != null && promptChild.activeSelf)
         {
-            Vector3 screenPos = Camera.main != null 
-                ? Camera.main.WorldToScreenPoint(transform.position + Vector3.up * 0.8f) 
+            Vector3 screenPos = Camera.main != null
+                ? Camera.main.WorldToScreenPoint(transform.position + Vector3.up * 0.8f)
                 : Vector3.zero;
             promptChild.transform.position = screenPos;
         }
 
-        // 按键触发
         if (playerInRange && Input.GetKeyDown(interactKey))
         {
             ExecuteAction();
@@ -332,9 +318,6 @@ public class InteractableObject : MonoBehaviour
     }
 }
 
-/// <summary>
-/// Trigger 中继脚本 —— 因为 Trigger 在子物体上，需要通知父 InteractableObject
-/// </summary>
 public class TriggerRelay : MonoBehaviour
 {
     public InteractableObject parent;
