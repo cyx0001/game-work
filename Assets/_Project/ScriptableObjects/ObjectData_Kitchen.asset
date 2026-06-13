@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d024074f6af26b4aa4e1e11d8c7d630, type: 3}
+  m_Name: ObjectData_Kitchen
+  m_EditorClassIdentifier: 
+  objectName: Kitchen
+  displayName: "\u53A8\u623F"
+  levels:
+  - bloodSugarDelta: 8
+    healthDelta: 2
+    moodDelta: 3
+    moneyDelta: 0
+    upgradeCost: 250
+    passiveBloodSugar: 0
+    passiveHealth: 0
+    passiveMoney: 0
+  - bloodSugarDelta: 12
+    healthDelta: 4
+    moodDelta: 6
+    moneyDelta: 0
+    upgradeCost: 600
+    passiveBloodSugar: 0
+    passiveHealth: 0
+    passiveMoney: 0
+  - bloodSugarDelta: 15
+    healthDelta: 6
+    moodDelta: 10
+    moneyDelta: 0
+    upgradeCost: 0
+    passiveBloodSugar: 0
+    passiveHealth: 0
+    passiveMoney: 0

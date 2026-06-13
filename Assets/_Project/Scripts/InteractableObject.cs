@@ -10,7 +10,9 @@ public class InteractableObject : MonoBehaviour
     public ObjectData objectData;
 
     [Header("小游戏模式")]
-    public bool launchTreadmillMinigame = false;
+    public bool launchMinigame = false;
+    [Tooltip("Treadmill / Kitchen 等")]
+    public string minigameSceneName = "";
 
     [Header("当前等级")]
     public int currentLevel = 1;
@@ -257,9 +259,13 @@ public class InteractableObject : MonoBehaviour
 
     public void ExecuteAction()
     {
-        if (launchTreadmillMinigame)
+        // 小游戏跳转
+        if (launchMinigame)
         {
-            TreadmillSceneLauncher.Launch(this);
+            if (minigameSceneName == "Treadmill")
+                TreadmillSceneLauncher.Launch(this);
+            else if (minigameSceneName == "Kitchen")
+                KitchenSceneLauncher.Launch(this);
             return;
         }
 

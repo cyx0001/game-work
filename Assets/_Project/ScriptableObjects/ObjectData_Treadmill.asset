@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d024074f6af26b4aa4e1e11d8c7d630, type: 3}
+  m_Name: ObjectData_Treadmill
+  m_EditorClassIdentifier: 
+  objectName: Treadmill
+  displayName: "\u8DD1\u6B65\u673A"
+  levels:
+  - bloodSugarDelta: -8
+    healthDelta: 8
+    moodDelta: 5
+    moneyDelta: 0
+    upgradeCost: 300
+    passiveBloodSugar: 0
+    passiveHealth: 0
+    passiveMoney: 0
+  - bloodSugarDelta: -12
+    healthDelta: 15
+    moodDelta: 10
+    moneyDelta: 0
+    upgradeCost: 800
+    passiveBloodSugar: 0
+    passiveHealth: 0
+    passiveMoney: 0
+  - bloodSugarDelta: -18
+    healthDelta: 25
+    moodDelta: 18
+    moneyDelta: 0
+    upgradeCost: 0
+    passiveBloodSugar: 0
+    passiveHealth: 0
+    passiveMoney: 0
