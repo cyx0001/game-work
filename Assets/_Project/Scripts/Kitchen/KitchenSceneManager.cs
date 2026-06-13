@@ -232,9 +232,9 @@ public class KitchenSceneManager : MonoBehaviour
     {
         resultPanel.SetActive(true);
         resultContentText.text = $"<b>厨房烹饪成果：</b>\n\n" +
-                                 $"最终血糖：+{curSugar:F1}\n" +
-                                 $"最终健康：+{curHealth:F1}\n" +
-                                 $"最终心情：+{curMood:F1}";
+                                 $"最终血糖：{curSugar:F1}\n" +
+                                 $"最终健康：{curHealth:F1}\n" +
+                                 $"最终心情：{curMood:F1}";
         
         KitchenGameBridge.Output_SugarDelta = curSugar;
         KitchenGameBridge.Output_HealthDelta = curHealth;
@@ -244,6 +244,6 @@ public class KitchenSceneManager : MonoBehaviour
 
     private void ExitAndReturnToMainScene()
     {
-        SceneManager.LoadScene("Game"); 
+        SceneManager.LoadScene("_Scene_0"); 
     }
 }

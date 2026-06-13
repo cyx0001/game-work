@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/Treadmill.unity
     guid: 58480cd573360e2418a6d1e546bb7e39
+  - enabled: 1
+    path: Assets/_Project/Scenes/Kitchen.unity
+    guid: 6e46f9675069a1a48989c2dbd130ebed
   m_configObjects: {}

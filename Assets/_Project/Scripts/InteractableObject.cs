@@ -167,6 +167,8 @@ public class InteractableObject : MonoBehaviour
 
         if (playerInRange && Input.GetKeyDown(interactKey))
         {
+            if (GameManager.Instance != null && GameManager.Instance.isInMinigame)
+                return;
             ExecuteAction();
         }
     }
