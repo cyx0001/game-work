@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement; // 用于重新加载场景
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class GameResultManager : MonoBehaviour
@@ -22,36 +22,32 @@ public class GameResultManager : MonoBehaviour
     {
         Instance = this;
 
-        // 确保一开始都是隐藏的
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
         if (gameWinPanel != null) gameWinPanel.SetActive(false);
 
-        // 绑定按钮事件：点击后重新加载当前关卡
         if (restartButton != null) restartButton.onClick.AddListener(RestartGame);
         if (winRestartButton != null) winRestartButton.onClick.AddListener(RestartGame);
     }
 
-    // 核心方法：检查当前的数值是否触发危机或通关
     public void CheckGameCondition(float sugar, float health, float mood, int currentDay)
     {
-        // 1. 判定失败条件
-        if (sugar >= 250f)
+        if (sugar >= GameConstants.MAX_BLOOD_SUGAR)
         {
             TriggerGameOver("由于你连续摄入高糖，血糖飙升至 250 以上，引发了急性并发症，被紧急送往 ICU！");
             return;
         }
-        if (health <= 0f)
+        if (sugar <= GameConstants.MIN_BLOOD_SUGAR)
         {
-            TriggerGameOver("你的健康值彻底归零！身体各器官不堪重负，你病倒了……");
+            TriggerGameOver("血糖过低归零！因严重低血糖昏倒，被紧急送往 ICU！");
             return;
         }
+        // 健康归零由 ThresholdEventManager 触发强制入院，游戏继续
         if (mood <= 0f)
         {
             TriggerGameOver("你的心情极度抑郁归零。在无尽的压力与焦虑下，你放弃了控糖管理……");
             return;
         }
 
-        // 2. 判定通关条件（假设一共要撑过 14 天）
         if (currentDay > 14)
         {
             TriggerGameWin();
@@ -67,7 +63,6 @@ public class GameResultManager : MonoBehaviour
             {
                 reasonText.text = reason;
             }
-            // 暂停游戏时间（防止后面还能点物件）
             Time.timeScale = 0f;
         }
     }
@@ -83,11 +78,7 @@ public class GameResultManager : MonoBehaviour
 
     private void RestartGame()
     {
-        // 恢复时间流速
         Time.timeScale = 1f;
-        // 重新加载当前场景
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-         UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
-     );
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

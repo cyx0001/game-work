@@ -32,19 +32,36 @@ public class PlayerDataManager : MonoBehaviour
         OnDataChanged?.Invoke();
     }
 
-    public void ModifyStats(float sugarDelta, float healthDelta, float moodDelta, int moneyDelta)
+    public void ModifyStats(float sugarDelta, float healthDelta, float moodDelta, int moneyDelta, bool skipThresholdCheck = false)
     {
-        bloodSugar = Mathf.Clamp(bloodSugar + sugarDelta, 0f, GameConstants.MAX_BLOOD_SUGAR);
+        float oldSugar = bloodSugar;
+
+        bloodSugar = Mathf.Clamp(bloodSugar + sugarDelta, GameConstants.MIN_BLOOD_SUGAR, GameConstants.MAX_BLOOD_SUGAR);
         health = Mathf.Clamp(health + healthDelta, 0f, GameConstants.MAX_HEALTH);
         mood = Mathf.Clamp(mood + moodDelta, 0f, GameConstants.MAX_MOOD);
         money = Mathf.Max(0, money + moneyDelta);
 
         Debug.Log($"【数据更新】当前状态 -> 血糖: {bloodSugar}, 健康: {health}, 心情: {mood}, 金钱: {money}");
 
-        // 状态更新通知 UI
         OnDataChanged?.Invoke();
 
-        // 每次属性变动立刻交给结果管理器判定是否进 ICU
+        if (!skipThresholdCheck && ThresholdEventManager.Instance != null)
+        {
+            ThresholdEventManager.Instance.OnStatsChanged(oldSugar, bloodSugar, health);
+        }
+
+        if (GameResultManager.Instance != null)
+        {
+            int day = GameManager.Instance != null ? GameManager.Instance.currentDay : 1;
+            GameResultManager.Instance.CheckGameCondition(bloodSugar, health, mood, day);
+        }
+    }
+
+    public void SetHealth(float value)
+    {
+        health = Mathf.Clamp(value, 0f, GameConstants.MAX_HEALTH);
+        OnDataChanged?.Invoke();
+
         if (GameResultManager.Instance != null)
         {
             int day = GameManager.Instance != null ? GameManager.Instance.currentDay : 1;

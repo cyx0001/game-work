@@ -13367,6 +13367,7 @@ GameObject:
   - component: {fileID: 844679366}
   - component: {fileID: 844679365}
   - component: {fileID: 844679368}
+  - component: {fileID: 844679369}
   m_Layer: 0
   m_Name: PersistentManagers
   m_TagString: Untagged
@@ -13392,7 +13393,7 @@ MonoBehaviour:
   OnAPChanged:
     m_PersistentCalls:
       m_Calls: []
-  testEvent: {fileID: 11400000, guid: 88c6359ef1c28ef4e859caf51cbb7c6d, type: 2}
+  dailyEventPoolAsset: {fileID: 11400000, guid: 432b76cba01844bb9de67d54a2ddcd5e, type: 2}
 --- !u!114 &844679366
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13444,6 +13445,18 @@ MonoBehaviour:
   reasonText: {fileID: 99795415}
   restartButton: {fileID: 423785205}
   winRestartButton: {fileID: 375300970}
+--- !u!114 &844679369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 844679364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 481b915ba5974f62874f581bd0c53be5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &848023056
 GameObject:
   m_ObjectHideFlags: 0

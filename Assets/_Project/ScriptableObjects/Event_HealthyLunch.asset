@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1c35b3b1f31a742b05fdea48bf7ffd, type: 3}
+  m_Name: Event_HealthyLunch
+  m_EditorClassIdentifier: 
+  eventID: 7
+  eventDescription: "\u5348\u9910\u65F6\u95F4\u5230\u4E86\uFF0C\u540C\u4E8B\u70B9\u4E86\u91CD\u6CB9\u91CD\u76D0\u7684\u70B8\u9171\u6392\u9AA8\uFF0C\u800C\u4F60\u773C\u524D\u662F\u516C\u53F8\u98DF\u5802\u7684\u85AA\u8349\u6C99\u62C9\u3002"
+  optionAText: "\u8DDF\u7740\u540C\u4E8B\u70B9\u6392\u9AA8\uFF0C\u5403\u5F97\u723D"
+  sugarDeltaA: 20
+  healthDeltaA: -8
+  moodDeltaA: 15
+  moneyDeltaA: -18
+  optionBText: "\u575A\u6301\u85AA\u8349\u6C99\u62C9\uFF0C\u63A7\u5236\u6444\u5165"
+  sugarDeltaB: -5
+  healthDeltaB: 8
+  moodDeltaB: -5
+  moneyDeltaB: -12
