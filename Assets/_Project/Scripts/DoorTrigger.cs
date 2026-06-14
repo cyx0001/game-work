@@ -86,6 +86,7 @@ public class DoorTrigger : MonoBehaviour
     private void OpenDoor()
     {
         isOpen = true;
+        if (doorTilemap == null || doorTilePositions == null) return;
         foreach (var pos in doorTilePositions)
             doorTilemap.SetTile(pos, null);
     }
@@ -93,8 +94,12 @@ public class DoorTrigger : MonoBehaviour
     private void CloseDoor()
     {
         isOpen = false;
+        if (doorTilemap == null || doorTilePositions == null || originalTiles == null) return;
         for (int i = 0; i < doorTilePositions.Length; i++)
-            doorTilemap.SetTile(doorTilePositions[i], originalTiles[i]);
+        {
+            if (doorTilePositions[i] != null && originalTiles[i] != null)
+                doorTilemap.SetTile(doorTilePositions[i], originalTiles[i]);
+        }
     }
 
     // ====== 编辑器可视化 ======

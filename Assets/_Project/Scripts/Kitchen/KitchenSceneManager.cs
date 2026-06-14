@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,9 +9,8 @@ public class KitchenSceneManager : MonoBehaviour
 {
     [Header("棋盘布局组件")]
     public GridLayoutGroup gridLayoutGroup;
-    public GameObject foodPrefab; 
-    
-    // === 核心修改：在这里直接在物理面板公开一个图片库 ===
+    public GameObject foodPrefab;
+
     [Header("食物美术图片库 (把你自定义目录的图片拖到这里)")]
     public List<Sprite> foodSprites = new List<Sprite>();
 
@@ -28,7 +28,7 @@ public class KitchenSceneManager : MonoBehaviour
     private int kitchenLevel = 1;
     private int gridSize = 5;
     private int remainingMoves = 10;
-    
+
     private float curSugar = 0f;
     private float curHealth = 0f;
     private float curMood = 0f;
@@ -36,16 +36,57 @@ public class KitchenSceneManager : MonoBehaviour
     private FoodItem[,] board;
     private FoodItem firstSelected = null;
 
+    private const string KITCHEN_TUTORIAL_KEY = "Tutorial_Kitchen_Shown";
+    public const string KITCHEN_TUTORIAL_MSG =
+        "<b>厨房小游戏</b>\n\n" +
+        "<b>[操作]</b>\n" +
+        "  点击一块食物选中它\n" +
+        "  再点击上下左右相邻的食物交换位置\n" +
+        "  横向或竖向 >=3 个相同食物即可消除\n\n" +
+        "<b>[消除加成]</b>\n" +
+        "  3连消 -> 基础属性\n" +
+        "  4连消 -> 1.2倍\n" +
+        "  5连消 -> 1.4倍\n\n" +
+        "<b>[步数]</b>  共 10 步，规划好每一步！";
+
     void Start()
     {
         kitchenLevel = KitchenGameBridge.Input_KitchenLevel;
-        
+
         remainingMoves = 10;
         curSugar = 0f; curHealth = 0f; curMood = 0f;
-        
+
         resultPanel.SetActive(false);
         btnConfirm.onClick.AddListener(ExitAndReturnToMainScene);
 
+        StartCoroutine(ShowTutorialIfNeeded());
+    }
+
+    private IEnumerator ShowTutorialIfNeeded()
+    {
+        yield return null;
+
+        if (PlayerPrefs.GetInt(KITCHEN_TUTORIAL_KEY, 0) == 0)
+        {
+            if (EventPopupController.Instance != null)
+            {
+                EventPopupController.Instance.DisplayNotice(KITCHEN_TUTORIAL_MSG, "开始烹饪！", () =>
+                {
+                    PlayerPrefs.SetInt(KITCHEN_TUTORIAL_KEY, 1);
+                    PlayerPrefs.Save();
+                    InitKitchen();
+                });
+                yield break;
+            }
+            PlayerPrefs.SetInt(KITCHEN_TUTORIAL_KEY, 1);
+            PlayerPrefs.Save();
+        }
+
+        InitKitchen();
+    }
+
+    private void InitKitchen()
+    {
         SetupGridByLevel();
         GenerateBoard();
         UpdateHUD();
@@ -87,14 +128,13 @@ public class KitchenSceneManager : MonoBehaviour
                 GameObject obj = Instantiate(foodPrefab, gridLayoutGroup.transform);
                 FoodItem item = obj.GetComponent<FoodItem>();
                 FoodStaticInfo randInfo = pool[Random.Range(0, pool.Count)];
-                
+
                 item.Init(x, y, randInfo, this);
                 board[x, y] = item;
             }
         }
     }
 
-    // 提供给 FoodItem 调用，用来安全获取图片库里的图片
     public Sprite GetSpriteByIndex(int index)
     {
         if (index >= 0 && index < foodSprites.Count)
@@ -125,7 +165,7 @@ public class KitchenSceneManager : MonoBehaviour
             {
                 SwapItems(firstSelected, clickedItem);
                 remainingMoves--;
-                
+
                 CheckAndProcessMatches();
                 UpdateHUD();
                 firstSelected = null;
@@ -215,7 +255,7 @@ public class KitchenSceneManager : MonoBehaviour
                 List<FoodStaticInfo> pool = FoodTable.Infos.FindAll(f => f.unlockLevel <= kitchenLevel);
                 item.Init(item.x, item.y, pool[Random.Range(0, pool.Count)], this);
             }
-            
+
             CheckAndProcessMatches();
         }
     }
@@ -235,7 +275,7 @@ public class KitchenSceneManager : MonoBehaviour
                                  $"最终血糖：{curSugar:F1}\n" +
                                  $"最终健康：{curHealth:F1}\n" +
                                  $"最终心情：{curMood:F1}";
-        
+
         KitchenGameBridge.Output_SugarDelta = curSugar;
         KitchenGameBridge.Output_HealthDelta = curHealth;
         KitchenGameBridge.Output_MoodDelta = curMood;
@@ -254,6 +294,14 @@ public class KitchenSceneManager : MonoBehaviour
             );
             KitchenGameBridge.IsDataReady = false;
         }
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.UseAP(1);
+
+        InteractableObject src = KitchenSceneLauncher.SourceObject;
+        if (src != null)
+            src.MarkLevelCleared();
+
         KitchenSceneLauncher.ReturnToMain();
     }
 }

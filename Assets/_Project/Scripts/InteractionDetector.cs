@@ -43,21 +43,22 @@ public class InteractionDetector : MonoBehaviour
             InteractableObject clickableObj = GetInteractableObjectAtMouse();
             if (clickableObj != null && UpgradePopupController.Instance != null)
             {
-                // 打开升级面板，把具体物件传进去
                 UpgradePopupController.Instance.OpenUpgradePanel(clickableObj);
             }
         }
     }
 
-    // 封装一个复用型的获取鼠标下物体的方法，供各处调用保持干净
     private InteractableObject GetInteractableObjectAtMouse()
     {
         Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero);
 
-        if (hit.collider != null)
+        // 使用 RaycastAll 穿透父物体碰撞体，找到子物体上的 InteractableObject
+        RaycastHit2D[] hits = Physics2D.RaycastAll(mousePosition, Vector2.zero);
+        foreach (var hit in hits)
         {
-            return hit.collider.GetComponent<InteractableObject>();
+            if (hit.collider == null) continue;
+            InteractableObject obj = hit.collider.GetComponent<InteractableObject>();
+            if (obj != null) return obj;
         }
         return null;
     }

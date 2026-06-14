@@ -1,9 +1,19 @@
+/// <summary>
+/// 跑步机迷你游戏——数据桥接器
+/// 跑步机游戏结束后将产出数据写入此处，供主场景读取并应用到玩家属性
+/// </summary>
 public static class TreadmillGameBridge
 {
-    public static int Input_TreadmillLevel = 1;
+    /// <summary>跑步机游戏最终得分</summary>
+    public static int Output_Score = 0;
 
-    public static float Output_SugarDelta = 0f;
-    public static float Output_HealthDelta = 0f;
-    public static float Output_MoodDelta = 0f;
+    /// <summary>是否有待处理的跑步机结算数据</summary>
     public static bool IsDataReady = false;
+
+    /// <summary>重置桥接数据（应在消费后调用）</summary>
+    public static void Reset()
+    {
+        Output_Score = 0;
+        IsDataReady = false;
+    }
 }
