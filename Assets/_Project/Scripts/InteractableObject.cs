@@ -11,7 +11,7 @@ public class InteractableObject : MonoBehaviour
 
     [Header("小游戏模式")]
     public bool launchMinigame = false;
-    [Tooltip("Treadmill / Kitchen 等")]
+    [Tooltip("Treadmill / Kitchen / ComputerQuiz 等")]
     public string minigameSceneName = "";
 
     [Header("当前等级")]
@@ -403,6 +403,8 @@ public class InteractableObject : MonoBehaviour
             TreadmillSceneLauncher.Launch(this);
         else if (minigameSceneName == "Kitchen")
             KitchenSceneLauncher.Launch(this);
+        else if (minigameSceneName == "ComputerQuiz")
+            ComputerSceneLauncher.Launch(this);
     }
 
     private bool IsBed()
