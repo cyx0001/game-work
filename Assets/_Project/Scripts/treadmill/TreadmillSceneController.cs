@@ -59,7 +59,8 @@ public class TreadmillSceneController : MonoBehaviour
         timerText.text = $"时间: {totalGameTime:F1}s";
         UpdateSpeedUI();
         
-        resultCloseButton.onClick.AddListener(() => { resultPanel.SetActive(false); });
+        TreadmillGameBridge.Input_TreadmillLevel = TreadmillSceneLauncher.TreadmillLevel;
+        resultCloseButton.onClick.AddListener(OnResultConfirm);
 
         // 启动整局游戏流程
         StartCoroutine(GameFlowRoutine());
@@ -242,33 +243,57 @@ public class TreadmillSceneController : MonoBehaviour
         }
     }
 
-    // 根据总分进行最后的评分计算
     void ShowResult()
     {
         resultPanel.SetActive(true);
         resultScoreText.text = $"最终得分: {score}";
 
-        // 根据游戏期间的得分进行多档评分展示
+        float sugarDelta = 0f, healthDelta = 0f, moodDelta = 0f;
+
         if (score >= 120)
         {
             ratingText.text = "最终评分: 完美控糖达人 (S)";
             ratingText.color = Color.green;
+            sugarDelta = -10f; healthDelta = 3f; moodDelta = 2f;
         }
         else if (score >= 70)
         {
             ratingText.text = "最终评分: 稳健运动者 (A)";
             ratingText.color = Color.yellow;
+            sugarDelta = -5f; healthDelta = 2f; moodDelta = 1f;
         }
         else if (score >= 30)
         {
             ratingText.text = "最终评分: 热身运动 (B)";
             ratingText.color = Color.white;
+            sugarDelta = -2f; healthDelta = 1f; moodDelta = 0f;
         }
         else
         {
             ratingText.text = "最终评分: 需要多加练习 (C)";
             ratingText.color = Color.red;
+            sugarDelta = 0f; healthDelta = 0f; moodDelta = -1f;
         }
+
+        TreadmillGameBridge.Output_SugarDelta = sugarDelta;
+        TreadmillGameBridge.Output_HealthDelta = healthDelta;
+        TreadmillGameBridge.Output_MoodDelta = moodDelta;
+        TreadmillGameBridge.IsDataReady = true;
+    }
+
+    void OnResultConfirm()
+    {
+        if (TreadmillGameBridge.IsDataReady && PlayerDataManager.Instance != null)
+        {
+            PlayerDataManager.Instance.ModifyStats(
+                TreadmillGameBridge.Output_SugarDelta,
+                TreadmillGameBridge.Output_HealthDelta,
+                TreadmillGameBridge.Output_MoodDelta,
+                0
+            );
+            TreadmillGameBridge.IsDataReady = false;
+        }
+        TreadmillSceneLauncher.ReturnToMain();
     }
 
     void ClearAllNotes()

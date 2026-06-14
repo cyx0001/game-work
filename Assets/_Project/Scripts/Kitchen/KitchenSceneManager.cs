@@ -203,8 +203,8 @@ public class KitchenSceneManager : MonoBehaviour
         if (matchedItems.Count > 0)
         {
             float ratio = 1.0f;
-            if (matchedItems.Count == 4) ratio = 1.5f;
-            else if (matchedItems.Count >= 5) ratio = 2.0f;
+            if (matchedItems.Count == 4) ratio = 1.2f;
+            else if (matchedItems.Count >= 5) ratio = 1.4f;
 
             foreach (var item in matchedItems)
             {
@@ -244,6 +244,16 @@ public class KitchenSceneManager : MonoBehaviour
 
     private void ExitAndReturnToMainScene()
     {
-        SceneManager.LoadScene("_Scene_0"); 
+        if (KitchenGameBridge.IsDataReady && PlayerDataManager.Instance != null)
+        {
+            PlayerDataManager.Instance.ModifyStats(
+                KitchenGameBridge.Output_SugarDelta,
+                KitchenGameBridge.Output_HealthDelta,
+                KitchenGameBridge.Output_MoodDelta,
+                0
+            );
+            KitchenGameBridge.IsDataReady = false;
+        }
+        KitchenSceneLauncher.ReturnToMain();
     }
 }
