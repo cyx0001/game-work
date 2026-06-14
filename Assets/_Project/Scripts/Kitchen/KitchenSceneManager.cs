@@ -25,6 +25,9 @@ public class KitchenSceneManager : MonoBehaviour
     public TextMeshProUGUI resultContentText;
     public Button btnConfirm;
 
+    [Header("音频")]
+    public AudioClip bgmClip;
+
     private int kitchenLevel = 1;
     private int gridSize = 5;
     private int remainingMoves = 10;
@@ -59,6 +62,9 @@ public class KitchenSceneManager : MonoBehaviour
         resultPanel.SetActive(false);
         btnConfirm.onClick.AddListener(ExitAndReturnToMainScene);
 
+        if (bgmClip != null && AudioManager.Instance != null)
+            AudioManager.Instance.PlayBGM(bgmClip);
+
         StartCoroutine(ShowTutorialIfNeeded());
     }
 
@@ -89,7 +95,27 @@ public class KitchenSceneManager : MonoBehaviour
     {
         SetupGridByLevel();
         GenerateBoard();
+        ClearInitialMatches();
         UpdateHUD();
+    }
+
+    /// <summary>清除初始棋盘上已存在的三连，不产生属性收益</summary>
+    private void ClearInitialMatches()
+    {
+        int safety = 0;
+        while (safety < 100)
+        {
+            HashSet<FoodItem> matched = FindMatches();
+            if (matched.Count == 0) break;
+
+            List<FoodStaticInfo> pool = FoodTable.Infos.FindAll(f => f.unlockLevel <= kitchenLevel);
+            foreach (var item in matched)
+            {
+                FoodStaticInfo randInfo = pool[Random.Range(0, pool.Count)];
+                item.Init(item.x, item.y, randInfo, this);
+            }
+            safety++;
+        }
     }
 
     private void SetupGridByLevel()
@@ -194,7 +220,8 @@ public class KitchenSceneManager : MonoBehaviour
         b.transform.SetSiblingIndex(indexA);
     }
 
-    private void CheckAndProcessMatches()
+    /// <summary>扫描棋盘，返回所有三连及以上的匹配项（纯检测，不修改状态）</summary>
+    private HashSet<FoodItem> FindMatches()
     {
         HashSet<FoodItem> matchedItems = new HashSet<FoodItem>();
 
@@ -240,6 +267,13 @@ public class KitchenSceneManager : MonoBehaviour
             }
         }
 
+        return matchedItems;
+    }
+
+    private void CheckAndProcessMatches()
+    {
+        HashSet<FoodItem> matchedItems = FindMatches();
+
         if (matchedItems.Count > 0)
         {
             float ratio = 1.0f;
@@ -284,6 +318,9 @@ public class KitchenSceneManager : MonoBehaviour
 
     private void ExitAndReturnToMainScene()
     {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayDefaultBGM();
+
         if (KitchenGameBridge.IsDataReady && PlayerDataManager.Instance != null)
         {
             PlayerDataManager.Instance.ModifyStats(

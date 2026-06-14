@@ -19,6 +19,9 @@ public class TreadmillSceneController : MonoBehaviour
     public TextMeshProUGUI ratingText;
     public Button resultCloseButton;
 
+    [Header("=== 音频 ===")]
+    public AudioClip bgmClip;
+
     [Header("=== 核心位置与预制体 ===")]
     public GameObject notePrefab;
     public RectTransform spawnPoint;
@@ -68,6 +71,9 @@ public class TreadmillSceneController : MonoBehaviour
 
         resultCloseButton.onClick.AddListener(OnResultClose);
 
+        if (bgmClip != null && AudioManager.Instance != null)
+            AudioManager.Instance.PlayBGM(bgmClip);
+
         StartCoroutine(ShowTutorialIfNeeded());
     }
 
@@ -97,6 +103,9 @@ public class TreadmillSceneController : MonoBehaviour
     private void OnResultClose()
     {
         resultPanel.SetActive(false);
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayDefaultBGM();
 
         float multiplier;
         if (score >= 120) multiplier = 1.5f;

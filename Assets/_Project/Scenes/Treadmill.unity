@@ -266,7 +266,6 @@ GameObject:
   m_Component:
   - component: {fileID: 395494733}
   - component: {fileID: 395494732}
-  - component: {fileID: 395494731}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -274,14 +273,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &395494731
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 395494730}
-  m_Enabled: 1
 --- !u!20 &395494732
 Camera:
   m_ObjectHideFlags: 0
@@ -1676,6 +1667,7 @@ MonoBehaviour:
   resultScoreText: {fileID: 341436733}
   ratingText: {fileID: 722368939}
   resultCloseButton: {fileID: 953512260}
+  bgmClip: {fileID: 8300000, guid: 8a69f5cf5d238d047812f204389bd0b9, type: 3}
   notePrefab: {fileID: 710553533836280146, guid: dbf49e5a9f541bf4bb49a88ad0bd6941, type: 3}
   spawnPoint: {fileID: 1365400913}
   judgementLine: {fileID: 1705687514}
