@@ -112,6 +112,12 @@ public class InteractableObject : MonoBehaviour
             promptCanvas = canvasGO.AddComponent<Canvas>();
             promptCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
             promptCanvas.sortingOrder = 100;
+
+            CanvasScaler scaler = canvasGO.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920, 1080);
+            scaler.matchWidthOrHeight = 0.5f;
+
             DontDestroyOnLoad(canvasGO);
         }
 
@@ -164,17 +170,36 @@ public class InteractableObject : MonoBehaviour
 
     private void Update()
     {
-        if (promptChild != null && promptChild.activeSelf)
+        bool inMinigame = GameManager.Instance != null && GameManager.Instance.isInMinigame;
+
+        if (promptChild != null)
         {
-            Vector3 screenPos = Camera.main != null
-                ? Camera.main.WorldToScreenPoint(transform.position + Vector3.up * 0.8f)
-                : Vector3.zero;
-            promptChild.transform.position = screenPos;
+            if (inMinigame)
+            {
+                if (promptChild.activeSelf)
+                    promptChild.SetActive(false);
+            }
+            else if (playerInRange && !promptChild.activeSelf)
+            {
+                promptChild.SetActive(true);
+            }
+            else if (!playerInRange && promptChild.activeSelf)
+            {
+                promptChild.SetActive(false);
+            }
+
+            if (promptChild.activeSelf)
+            {
+                Vector3 screenPos = Camera.main != null
+                    ? Camera.main.WorldToScreenPoint(transform.position + Vector3.up * 0.8f)
+                    : Vector3.zero;
+                promptChild.transform.position = screenPos;
+            }
         }
 
         if (playerInRange && Input.GetKeyDown(interactKey))
         {
-            if (GameManager.Instance != null && GameManager.Instance.isInMinigame)
+            if (inMinigame)
                 return;
             ExecuteAction();
         }
@@ -324,7 +349,11 @@ public class InteractableObject : MonoBehaviour
     private void ExecuteActionDirect()
     {
         if (GameManager.Instance == null || !GameManager.Instance.UseAP(1))
+        {
+            if (EventPopupController.Instance != null)
+                EventPopupController.Instance.DisplayNotice("行动点不足！", "确定");
             return;
+        }
 
         if (IsBed())
         {
@@ -399,6 +428,13 @@ public class InteractableObject : MonoBehaviour
     /// <summary>启动小游戏</summary>
     private void LaunchMinigame()
     {
+        if (GameManager.Instance == null || !GameManager.Instance.UseAP(1))
+        {
+            if (EventPopupController.Instance != null)
+                EventPopupController.Instance.DisplayNotice("行动点不足！无法进行小游戏。", "确定");
+            return;
+        }
+
         if (minigameSceneName == "Treadmill")
             TreadmillSceneLauncher.Launch(this);
         else if (minigameSceneName == "Kitchen")
