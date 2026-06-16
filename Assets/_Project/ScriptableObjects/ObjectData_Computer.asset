@@ -15,25 +15,25 @@ MonoBehaviour:
   objectName: Computer
   displayName: "\u7535\u8111"
   levels:
-  - bloodSugarDelta: -3
-    healthDelta: 4
-    moodDelta: 3
+  - bloodSugarDelta: 0
+    healthDelta: 0
+    moodDelta: 0
     moneyDelta: 0
     upgradeCost: 280
     passiveBloodSugar: 0
     passiveHealth: 0
     passiveMoney: 0
-  - bloodSugarDelta: -5
-    healthDelta: 6
-    moodDelta: 5
+  - bloodSugarDelta: 0
+    healthDelta: 0
+    moodDelta: 0
     moneyDelta: 0
     upgradeCost: 650
     passiveBloodSugar: 0
     passiveHealth: 0
     passiveMoney: 0
-  - bloodSugarDelta: -8
-    healthDelta: 8
-    moodDelta: 8
+  - bloodSugarDelta: 0
+    healthDelta: 0
+    moodDelta: 0
     moneyDelta: 0
     upgradeCost: 0
     passiveBloodSugar: 0

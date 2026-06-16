@@ -1466,7 +1466,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a53be8b6ff203884d91ddbb0cd7a4f93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectData: {fileID: 0}
+  objectData: {fileID: 11400000, guid: c3d4e5f6a7b8c9d0e1f2a3b4c5d6e8f, type: 2}
   launchMinigame: 1
   minigameSceneName: ComputerQuiz
   currentLevel: 1
@@ -1477,7 +1477,7 @@ MonoBehaviour:
   interactRange: 2
   promptText: "[\u7A7A\u683C]\u4F7F\u7528\u7535\u8111"
   promptFont: {fileID: 11400000, guid: af770bbec9efde84fab0bb5dd03bc11f, type: 2}
-  allowSkip: 1
+  allowSkip: 0
 --- !u!1 &201708464
 GameObject:
   m_ObjectHideFlags: 0

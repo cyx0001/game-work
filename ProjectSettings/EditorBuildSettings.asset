@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/_Project/Scenes/IntroVideo.unity
+    guid: e3f4a5b6c78901234567890123456702
+  - enabled: 1
+    path: Assets/_Project/Scenes/Start.unity
+    guid: d2e3f4a5b678901234567890abcdef01
+  - enabled: 1
     path: Assets/_Project/Scenes/_Scene_0.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
@@ -17,7 +23,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/ComputerQuiz.unity
     guid: 2f345678901234567890abcdef012345
-  - enabled: 1
-    path: Assets/_Project/Scenes/Start.unity
-    guid: d2e3f4a5b678901234567890abcdef01
   m_configObjects: {}

@@ -21,10 +21,9 @@ public class ComputerQuizSceneManager : MonoBehaviour
     [Tooltip("每局随机抽取的题目数量")]
     public int questionsPerRound = 5;
 
-    [Header("答对一题属性变化(参照厨房绿色食物消除)")]
-    public float correctSugarDelta = -1f;
-    public float correctHealthDelta = 2f;
-    public float correctMoodDelta = 1f;
+    [Header("答对奖励与完成代价")]
+    public int moneyPerCorrect = 30;
+    public float completionHealthPenalty = -10f;
 
     [Header("字体（拖入 Chinese_Font_Asset）")]
     public TMP_FontAsset chineseFont;
@@ -48,17 +47,13 @@ public class ComputerQuizSceneManager : MonoBehaviour
     private int correctCount;
     private bool answered;
 
-    private float curSugar;
-    private float curHealth;
-    private float curMood;
+    private int curMoney;
 
     private TextMeshProUGUI progressText;
     private TextMeshProUGUI questionText;
     private TextMeshProUGUI feedbackText;
     private TextMeshProUGUI remainingText;
-    private TextMeshProUGUI sugarText;
-    private TextMeshProUGUI healthText;
-    private TextMeshProUGUI moodText;
+    private TextMeshProUGUI moneyText;
     private Button[] optionButtons = new Button[4];
     private TextMeshProUGUI[] optionLabels = new TextMeshProUGUI[4];
     private Button nextButton;
@@ -72,10 +67,10 @@ public class ComputerQuizSceneManager : MonoBehaviour
         "<b>糖尿病知识问答</b>\n\n" +
         "<b>[操作]</b>\n" +
         "  每题四个选项，点击选择答案\n" +
-        "  答对会累计血糖/健康/心情变化\n\n" +
-        "<b>[属性]</b>\n" +
-        "  答对一题: 血糖-1 / 健康+2 / 心情+1\n" +
-        "  (与厨房绿色食物消除量级相近)";
+        "  每天只能完成一次\n\n" +
+        "<b>[收益与代价]</b>\n" +
+        "  答对一题: 金钱 +30\n" +
+        "  完成答题: 健康 -10";
 
     void Awake()
     {
@@ -122,9 +117,7 @@ public class ComputerQuizSceneManager : MonoBehaviour
         currentIndex = 0;
         correctCount = 0;
         answered = false;
-        curSugar = 0f;
-        curHealth = 0f;
-        curMood = 0f;
+        curMoney = 0;
 
         quizPanel.SetActive(true);
         resultPanel.SetActive(false);
@@ -177,14 +170,10 @@ public class ComputerQuizSceneManager : MonoBehaviour
         if (isCorrect)
         {
             correctCount++;
-            curSugar += correctSugarDelta;
-            curHealth += correctHealthDelta;
-            curMood += correctMoodDelta;
+            curMoney += moneyPerCorrect;
 
             feedbackText.text =
-                $"<color=#7CFC98>回答正确！</color> " +
-                $"(血糖{(correctSugarDelta >= 0 ? "+" : "")}{correctSugarDelta:F0} " +
-                $"健康+{correctHealthDelta:F0} 心情+{correctMoodDelta:F0})\n{q.explanation}";
+                $"<color=#7CFC98>回答正确！</color> (金钱 +{moneyPerCorrect})\n{q.explanation}";
         }
         else
         {
@@ -215,9 +204,7 @@ public class ComputerQuizSceneManager : MonoBehaviour
     {
         int remaining = Mathf.Max(0, roundQuestions.Count - currentIndex);
         remainingText.text = $"剩余题数: {remaining}";
-        sugarText.text = $"累计血糖: {(curSugar >= 0 ? "+" : "")}{curSugar:F1}";
-        healthText.text = $"累计健康: {(curHealth >= 0 ? "+" : "")}{curHealth:F1}";
-        moodText.text = $"累计心情: {(curMood >= 0 ? "+" : "")}{curMood:F1}";
+        moneyText.text = $"累计金钱: +{curMoney}";
     }
 
     private void ShowResult()
@@ -238,15 +225,13 @@ public class ComputerQuizSceneManager : MonoBehaviour
             $"<b>答题成果</b>\n\n" +
             $"正确：{correctCount} / {total}  ({rate:F0}%)\n" +
             $"评价：{grade}\n\n" +
-            $"最终血糖：{curSugar:F1}\n" +
-            $"最终健康：{curHealth:F1}\n" +
-            $"最终心情：{curMood:F1}";
+            $"获得金钱：+{curMoney}\n" +
+            $"健康变化：{completionHealthPenalty:F0}";
 
         ComputerGameBridge.Output_CorrectCount = correctCount;
         ComputerGameBridge.Output_TotalCount = total;
-        ComputerGameBridge.Output_SugarDelta = curSugar;
-        ComputerGameBridge.Output_HealthDelta = curHealth;
-        ComputerGameBridge.Output_MoodDelta = curMood;
+        ComputerGameBridge.Output_MoneyDelta = curMoney;
+        ComputerGameBridge.Output_HealthPenalty = completionHealthPenalty;
         ComputerGameBridge.IsDataReady = true;
     }
 
@@ -254,26 +239,23 @@ public class ComputerQuizSceneManager : MonoBehaviour
     {
         if (ComputerSceneLauncher.SourceObject != null)
         {
-            if (PlayerDataManager.Instance != null)
+            if (ComputerGameBridge.IsDataReady && PlayerDataManager.Instance != null)
             {
                 PlayerDataManager.Instance.ModifyStats(
-                    ComputerGameBridge.Output_SugarDelta,
-                    ComputerGameBridge.Output_HealthDelta,
-                    ComputerGameBridge.Output_MoodDelta,
-                    0
+                    0,
+                    ComputerGameBridge.Output_HealthPenalty,
+                    0,
+                    ComputerGameBridge.Output_MoneyDelta
                 );
+                ComputerGameBridge.IsDataReady = false;
             }
 
             if (GameManager.Instance != null)
                 GameManager.Instance.UseAP(1);
 
-            InteractableObject source = ComputerSceneLauncher.SourceObject;
-            if (source != null)
-                source.MarkLevelCleared();
-
+            ComputerSceneLauncher.MarkCompletedToday();
             ComputerSceneLauncher.ReturnToMain();
         }
-        // 独立场景：确认按钮暂不处理，后续再接逻辑
     }
 
     private void SetOptionColor(Button btn, Color color)
@@ -403,7 +385,7 @@ public class ComputerQuizSceneManager : MonoBehaviour
         hudRect.anchorMax = new Vector2(0f, 0.5f);
         hudRect.pivot = new Vector2(0f, 0.5f);
         hudRect.anchoredPosition = new Vector2(40f, 0f);
-        hudRect.sizeDelta = new Vector2(360f, 320f);
+        hudRect.sizeDelta = new Vector2(360f, 200f);
 
         Image hudBg = hud.AddComponent<Image>();
         hudBg.color = new Color(1f, 1f, 1f, 0.18f);
@@ -419,9 +401,7 @@ public class ComputerQuizSceneManager : MonoBehaviour
         layout.childForceExpandHeight = false;
 
         remainingText = CreateHudLabel(hudRect, "Remaining");
-        sugarText = CreateHudLabel(hudRect, "Sugar");
-        healthText = CreateHudLabel(hudRect, "Health");
-        moodText = CreateHudLabel(hudRect, "Mood");
+        moneyText = CreateHudLabel(hudRect, "Money");
     }
 
     private TextMeshProUGUI CreateHudLabel(RectTransform parent, string name)

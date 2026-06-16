@@ -244,9 +244,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   questionsPerRound: 5
-  correctSugarDelta: -1
-  correctHealthDelta: 2
-  correctMoodDelta: 1
+  moneyPerCorrect: 30
+  completionHealthPenalty: -10
   chineseFont: {fileID: 11400000, guid: af770bbec9efde84fab0bb5dd03bc11f, type: 2}
   backgroundSprite: {fileID: 21300000, guid: fa7c763cc36ff1a459736c502deb873d, type: 3}
   contentRootPosition: {x: 0, y: 85}

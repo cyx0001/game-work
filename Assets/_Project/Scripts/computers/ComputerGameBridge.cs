@@ -7,8 +7,7 @@ public static class ComputerGameBridge
 
     public static int Output_CorrectCount = 0;
     public static int Output_TotalCount = 0;
-    public static float Output_SugarDelta = 0f;
-    public static float Output_HealthDelta = 0f;
-    public static float Output_MoodDelta = 0f;
+    public static int Output_MoneyDelta = 0;
+    public static float Output_HealthPenalty = 0f;
     public static bool IsDataReady = false;
 }
