@@ -264,9 +264,6 @@ public class ComputerQuizSceneManager : MonoBehaviour
                 );
             }
 
-            if (GameManager.Instance != null)
-                GameManager.Instance.UseAP(1);
-
             InteractableObject source = ComputerSceneLauncher.SourceObject;
             if (source != null)
                 source.MarkLevelCleared();

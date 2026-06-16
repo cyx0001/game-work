@@ -127,9 +127,6 @@ public class TreadmillSceneController : MonoBehaviour
                 );
             }
 
-            if (GameManager.Instance != null)
-                GameManager.Instance.UseAP(1);
-
             src.MarkLevelCleared();
 
             TreadmillGameBridge.Output_Score = score;

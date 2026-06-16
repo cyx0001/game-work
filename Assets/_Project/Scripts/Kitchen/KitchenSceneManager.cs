@@ -332,9 +332,6 @@ public class KitchenSceneManager : MonoBehaviour
             KitchenGameBridge.IsDataReady = false;
         }
 
-        if (GameManager.Instance != null)
-            GameManager.Instance.UseAP(1);
-
         InteractableObject src = KitchenSceneLauncher.SourceObject;
         if (src != null)
             src.MarkLevelCleared();
