@@ -163,8 +163,7 @@ public class ThresholdEventManager : MonoBehaviour
         PlayerDataManager pd = PlayerDataManager.Instance;
         if (pd.money < GameConstants.EMERGENCY_HOSPITAL_COST)
         {
-            ShowWarning(GameConstants.MSG_HOSPITAL_NO_MONEY_EMERGENCY);
-            onComplete?.Invoke();
+            ShowWarning(GameConstants.MSG_HOSPITAL_NO_MONEY_EMERGENCY, onComplete);
             return;
         }
 
@@ -195,8 +194,7 @@ public class ThresholdEventManager : MonoBehaviour
         if (pd.money < GameConstants.HEALTH_ZERO_HOSPITAL_COST)
         {
             healthZeroHandled = true;
-            ShowWarning(GameConstants.MSG_HOSPITAL_NO_MONEY_HEALTH);
-            onComplete?.Invoke();
+            ShowWarning(GameConstants.MSG_HOSPITAL_NO_MONEY_HEALTH, onComplete);
             return;
         }
 
@@ -211,11 +209,13 @@ public class ThresholdEventManager : MonoBehaviour
         });
     }
 
-    private void ShowWarning(string message)
+    private void ShowWarning(string message, System.Action onClosed = null)
     {
         Debug.Log($"【阈值警告】{message}");
         if (EventPopupController.Instance != null)
-            EventPopupController.Instance.DisplayNotice(message);
+            EventPopupController.Instance.DisplayNotice(message, "知道了", onClosed);
+        else
+            onClosed?.Invoke();
     }
 
     private void ShowForcedEvent(string message, System.Action onConfirm)

@@ -79,6 +79,20 @@ public class SleepFadeController : MonoBehaviour
 
     public bool IsFading => isFading;
 
+    /// <summary>
+    /// 立即去掉黑屏遮罩（夜晚结算弹窗、游戏结束等需要显示在顶层时调用）。
+    /// </summary>
+    public void ClearOverlay()
+    {
+        StopAllCoroutines();
+        isFading = false;
+        if (fadeGroup != null)
+        {
+            fadeGroup.alpha = 0f;
+            fadeGroup.blocksRaycasts = false;
+        }
+    }
+
     // ==================== 核心协程 ====================
 
     private IEnumerator FadeRoutine(System.Action onMidPoint)
@@ -90,7 +104,7 @@ public class SleepFadeController : MonoBehaviour
         float t = 0f;
         while (t < fadeDuration)
         {
-            t += Time.deltaTime;
+            t += Time.unscaledDeltaTime;
             fadeGroup.alpha = Mathf.Lerp(0f, 1f, t / fadeDuration);
             yield return null;
         }
@@ -100,13 +114,13 @@ public class SleepFadeController : MonoBehaviour
         onMidPoint?.Invoke();
 
         // --- 阶段3: 短暂停留 ---
-        yield return new WaitForSeconds(blackHoldTime);
+        yield return new WaitForSecondsRealtime(blackHoldTime);
 
         // --- 阶段4: 屏幕渐亮 ---
         t = 0f;
         while (t < fadeDuration)
         {
-            t += Time.deltaTime;
+            t += Time.unscaledDeltaTime;
             fadeGroup.alpha = Mathf.Lerp(1f, 0f, t / fadeDuration);
             yield return null;
         }

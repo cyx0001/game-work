@@ -67,6 +67,9 @@ public class EventPopupController : MonoBehaviour
     /// <summary>弹窗显示时提升 Canvas 层级，确保盖在小游戏 UI 之上</summary>
     private void PushSortingOrder()
     {
+        if (SleepFadeController.Instance != null)
+            SleepFadeController.Instance.ClearOverlay();
+
         if (parentCanvas != null)
         {
             savedSortingOrder = parentCanvas.sortingOrder;
@@ -237,6 +240,21 @@ public class EventPopupController : MonoBehaviour
         if (maskBackground != null) maskBackground.SetActive(false);
 
         callback?.Invoke();
+    }
+
+    public void ForceClose()
+    {
+        onNoticeClosed = null;
+        onChoiceA = null;
+        onChoiceB = null;
+        currentEvent = null;
+
+        SetSingleButtonLayout(false);
+        if (buttonB != null) buttonB.gameObject.SetActive(true);
+
+        PopSortingOrder();
+        gameObject.SetActive(false);
+        if (maskBackground != null) maskBackground.SetActive(false);
     }
 
     private void CloseNotice()

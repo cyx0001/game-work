@@ -50,8 +50,19 @@ public class StartSceneController : MonoBehaviour
 
     void Awake()
     {
+        ResetPersistedGameState();
         ResolveAssets();
         SetupUI();
+    }
+
+    /// <summary>
+    /// 进入开始界面 = 新开一局。Build 不会像 Editor 那样自动清 PlayerPrefs，
+    /// 否则电脑「今日已用」、小游戏跳过记录等会跨次启动残留。
+    /// </summary>
+    private static void ResetPersistedGameState()
+    {
+        PlayerPrefs.DeleteAll();
+        PlayerPrefs.Save();
     }
 
     void Start()

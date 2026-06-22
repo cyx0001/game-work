@@ -9,14 +9,14 @@ public class GameResultManager : MonoBehaviour
 
     public static GameResultManager Instance { get; private set; }
 
-    [Header("结果UI面板")]
+    [Header("���UI���")]
     public GameObject gameOverPanel;
     public GameObject gameWinPanel;
 
-    [Header("失败原因文本")]
+    [Header("ʧ��ԭ���ı�")]
     public TextMeshProUGUI reasonText;
 
-    [Header("控制按钮")]
+    [Header("���ư�ť")]
     public Button restartButton;
     public Button winRestartButton;
 
@@ -35,18 +35,18 @@ public class GameResultManager : MonoBehaviour
     {
         if (sugar >= GameConstants.MAX_BLOOD_SUGAR)
         {
-            TriggerGameOver("由于你连续摄入高糖，血糖飙升至 250 以上，引发了急性并发症，被紧急送往 ICU！");
+            TriggerGameOver("����������������ǣ�Ѫ������� 250 ���ϣ������˼��Բ���֢������������ ICU��");
             return;
         }
         if (sugar <= GameConstants.MIN_BLOOD_SUGAR)
         {
-            TriggerGameOver("血糖过低归零！因严重低血糖昏倒，被紧急送往 ICU！");
+            TriggerGameOver("Ѫ�ǹ��͹��㣡�����ص�Ѫ�ǻ赹������������ ICU��");
             return;
         }
-        // 健康归零由 ThresholdEventManager 触发强制入院，游戏继续
+        // ���������� ThresholdEventManager ����ǿ����Ժ����Ϸ����
         if (mood <= 0f)
         {
-            TriggerGameOver("你的心情极度抑郁归零。在无尽的压力与焦虑下，你放弃了控糖管理……");
+            TriggerGameOver("������鼫���������㡣���޾���ѹ���뽹���£�������˿��ǹ�������");
             return;
         }
 
@@ -58,6 +58,12 @@ public class GameResultManager : MonoBehaviour
 
     private void TriggerGameOver(string reason)
     {
+        if (SleepFadeController.Instance != null)
+            SleepFadeController.Instance.ClearOverlay();
+
+        if (EventPopupController.Instance != null)
+            EventPopupController.Instance.ForceClose();
+
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);
@@ -71,6 +77,12 @@ public class GameResultManager : MonoBehaviour
 
     private void TriggerGameWin()
     {
+        if (SleepFadeController.Instance != null)
+            SleepFadeController.Instance.ClearOverlay();
+
+        if (EventPopupController.Instance != null)
+            EventPopupController.Instance.ForceClose();
+
         if (gameWinPanel != null)
         {
             gameWinPanel.SetActive(true);

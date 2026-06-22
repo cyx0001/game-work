@@ -10,16 +10,17 @@ using UnityEditor;
 #endif
 
 /// <summary>
-/// 开场动画：全屏播放 Resources/开场动画.mp4，播完或按键跳过进入 Start 场景。
+/// 开场动画：播放 StreamingAssets/intro.mp4，播完或按键跳过进入 Start 场景。
 /// </summary>
 public class IntroVideoSceneController : MonoBehaviour
 {
-    private const string VideoAssetPath = "Assets/_Project/Resources/开场动画.mp4";
-    private const string ResourcesVideoName = "开场动画";
+    private const string StreamingVideoFileName = "intro.mp4";
+    private const string VideoAssetPath = "Assets/StreamingAssets/intro.mp4";
+    private const string LegacyResourcesVideoName = "开场动画";
 
     public const string NextSceneName = "Start";
 
-    [Header("视频")]
+    [Header("视频（可选，Editor 预览用；打包后以 StreamingAssets 为准）")]
     public VideoClip introClip;
 
     [Header("行为")]
@@ -91,10 +92,7 @@ public class IntroVideoSceneController : MonoBehaviour
 #endif
 
         if (introClip == null)
-            introClip = Resources.Load<VideoClip>(ResourcesVideoName);
-
-        if (introClip == null)
-            Debug.LogWarning("[IntroVideo] 未能加载 VideoClip，将尝试用文件路径播放。");
+            introClip = Resources.Load<VideoClip>(LegacyResourcesVideoName);
     }
 
     private void SetupVideoPlayer()
@@ -161,7 +159,7 @@ public class IntroVideoSceneController : MonoBehaviour
     {
         if (!TryConfigureVideoSource())
         {
-            Debug.LogError("[IntroVideo] 找不到视频文件，跳过开场动画。");
+            Debug.LogError("[IntroVideo] 找不到 intro.mp4，跳过开场动画。");
             SceneManager.LoadScene(NextSceneName);
             yield break;
         }
@@ -181,23 +179,26 @@ public class IntroVideoSceneController : MonoBehaviour
 
     private bool TryConfigureVideoSource()
     {
+        string streamingUrl = GetStreamingVideoUrl();
+        if (!string.IsNullOrEmpty(streamingUrl))
+        {
+            videoPlayer.source = VideoSource.Url;
+            videoPlayer.clip = null;
+            videoPlayer.url = streamingUrl;
+            Debug.Log($"[IntroVideo] 使用 StreamingAssets 播放: {streamingUrl}");
+            return true;
+        }
+
         if (introClip != null)
         {
             videoPlayer.source = VideoSource.VideoClip;
             videoPlayer.clip = introClip;
             videoPlayer.url = string.Empty;
+            Debug.Log("[IntroVideo] 使用 VideoClip 播放。");
             return true;
         }
 
-        string url = BuildVideoFileUrl();
-        if (string.IsNullOrEmpty(url))
-            return false;
-
-        videoPlayer.source = VideoSource.Url;
-        videoPlayer.clip = null;
-        videoPlayer.url = url;
-        Debug.Log($"[IntroVideo] 使用文件路径播放: {url}");
-        return true;
+        return false;
     }
 
     private IEnumerator WaitUntilPrepared()
@@ -215,16 +216,16 @@ public class IntroVideoSceneController : MonoBehaviour
         if (videoPlayer.isPrepared)
             yield break;
 
-        if (videoPlayer.source == VideoSource.VideoClip)
+        if (videoPlayer.source != VideoSource.Url)
         {
-            string url = BuildVideoFileUrl();
-            if (!string.IsNullOrEmpty(url))
+            string streamingUrl = GetStreamingVideoUrl();
+            if (!string.IsNullOrEmpty(streamingUrl))
             {
-                Debug.LogWarning("[IntroVideo] VideoClip 准备失败，改用文件 URL 重试。");
+                Debug.LogWarning("[IntroVideo] VideoClip 准备失败，改用 StreamingAssets URL 重试。");
                 videoPlayer.Stop();
                 videoPlayer.source = VideoSource.Url;
                 videoPlayer.clip = null;
-                videoPlayer.url = url;
+                videoPlayer.url = streamingUrl;
 
                 lastError = null;
                 videoPlayer.Prepare();
@@ -238,19 +239,13 @@ public class IntroVideoSceneController : MonoBehaviour
         }
     }
 
-    private string BuildVideoFileUrl()
+    private static string GetStreamingVideoUrl()
     {
-#if UNITY_EDITOR
-        string assetPath = introClip != null
-            ? AssetDatabase.GetAssetPath(introClip)
-            : VideoAssetPath;
+        string path = Path.Combine(Application.streamingAssetsPath, StreamingVideoFileName);
+        if (!File.Exists(path))
+            return null;
 
-        if (!string.IsNullOrEmpty(assetPath) && File.Exists(assetPath))
-            return ToFileUrl(Path.GetFullPath(assetPath));
-#endif
-
-        // 打包后 Resources 中的视频会随 VideoClip 一起提供；若 clip 为空则无法回退到原始 mp4。
-        return null;
+        return ToFileUrl(Path.GetFullPath(path));
     }
 
     private static string ToFileUrl(string fullPath)
