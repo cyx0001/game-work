@@ -302,11 +302,12 @@ public class InteractableObject : MonoBehaviour
     /// <summary>新手指南内容（仅基础操作）</summary>
     public const string TUTORIAL_MESSAGE =
         "<b>欢迎来到《血糖控制专家》！</b>\n\n" +
-        "<b>[移动]</b>  WASD 或 方向键\n\n" +
+        "<b>[移动]</b>  WASD 或 方向键\n" +
+        "<b>[菜单]</b>  按 <b>ESC</b> 唤出菜单（返回标题 / 退出）\n\n" +
         "<b>[交互]</b>\n" +
         "  走近物体按 <b>空格键</b> 或 <b>鼠标左键</b>\n" +
         "  <b>鼠标右键</b>点击物体查看升级面板\n\n" +
-        "<b>[行动点]</b>  每天 5 点 AP，合理安排！\n\n" +
+        "<b>[行动点]</b>  每天 5 点 AP，合理安排！\n" +
         "<b>[目标]</b>  14 天内将血糖控制在 70~120 的安全范围。\n\n" +
         "<color=#C08860>温馨提示：</color>如果忘记目标，可以移动鼠标到屏幕左边查看哦！";
 

@@ -21396,6 +21396,60 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1639760749}
   m_CullTransparentMesh: 1
+--- !u!1 &1694212842
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1694212844}
+  - component: {fileID: 1694212843}
+  m_Layer: 0
+  m_Name: GoalReminder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1694212843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1694212842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88362efe4254c1a43be6d93cf3710f6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bgSprite: {fileID: 21300000, guid: a5140f40435449d438c8f6e912de9608, type: 3}
+  arrowRight: {fileID: 21300000, guid: a9708654d06a28948b965257b85cb5b1, type: 3}
+  arrowLeft: {fileID: 21300000, guid: 34efe6ce94ec88a4dbf097643ce081d5, type: 3}
+  chineseFont: {fileID: 11400000, guid: af770bbec9efde84fab0bb5dd03bc11f, type: 2}
+  fontSize: 22
+  textColor: {r: 1, g: 1, b: 1, a: 1}
+  collapsedWidth: 40
+  expandedWidth: 270
+  panelHeight: 240
+  animationSpeed: 10
+--- !u!4 &1694212844
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1694212842}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.230565, y: 3.3771188, z: -0.028140854}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1699351765
 GameObject:
   m_ObjectHideFlags: 0
@@ -26149,3 +26203,4 @@ SceneRoots:
   - {fileID: 472363445}
   - {fileID: 530024809}
   - {fileID: 141611817}
+  - {fileID: 1694212844}

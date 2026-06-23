@@ -17,7 +17,7 @@ public class EventPopupController : MonoBehaviour
 
     [Header("弹窗尺寸（Inspector 可调）")]
     public float panelWidth = 620f;
-    public float panelHeight = 440f;
+    public float panelHeight = 500f;
     public float buttonHeight = 40f;
 
     private EventData currentEvent;
