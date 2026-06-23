@@ -1163,9 +1163,11 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 2e2a671338d8ef84fa0a51d810e5817e, type: 3}
   - {fileID: 21300000, guid: f54d542a335d92748949a6f56bab8038, type: 3}
   - {fileID: 21300000, guid: 183d3adabbf6cfd4aaff8a08f305ac66, type: 3}
+  - {fileID: 21300000, guid: 1e2835982b6ac304da73833af61b0462, type: 3}
   - {fileID: 21300000, guid: 8825281dad243e14e989e78d0f55cf89, type: 3}
   - {fileID: 21300000, guid: 48116f8618e5b8c48af435310aa99507, type: 3}
   - {fileID: 21300000, guid: 01528855888215c4da925465e9443356, type: 3}
+  - {fileID: 21300000, guid: a7535c2b691259941ad2c17c715bb66e, type: 3}
   movesText: {fileID: 1688023422}
   sugarText: {fileID: 1234217491}
   healthText: {fileID: 588628135}

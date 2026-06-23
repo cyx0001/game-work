@@ -41,13 +41,10 @@ public static class FoodTable
         new FoodStaticInfo("小蛋糕",   FoodType.Red,    1, 1.5f, -0.5f, 1.5f, 5),
 
         // ── Lv.2 解锁 ──
-        new FoodStaticInfo("全麦面包", FoodType.Green,  2, -0.1f, 0.4f,  0,   11),
         new FoodStaticInfo("方便面",   FoodType.Yellow, 2, 0.5f,  0,     0.5f, 7),
 
         // ── Lv.3 解锁 ──
         new FoodStaticInfo("燕麦粥",   FoodType.Green,  3, -0.5f, 0.5f,  0,    8),
-        new FoodStaticInfo("豆腐",     FoodType.Green,  3, 0,     0.6f,  0,   12),
-
         new FoodStaticInfo("珍珠奶茶", FoodType.Red,    3, 2,     -0.5f, 2,    9),
     };
 }
