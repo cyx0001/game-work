@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 100000004}
   - component: {fileID: 100000003}
   - component: {fileID: 100000002}
+  - component: {fileID: 100000005}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -214,62 +215,30 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &200000001
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 200000003}
-  - component: {fileID: 200000002}
-  m_Layer: 0
-  m_Name: IntroVideoSceneController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &200000002
+--- !u!114 &100000005
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 200000001}
+  m_GameObject: {fileID: 100000001}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2c3d4e5f678901234567890abcdef02, type: 3}
+  m_Script: {fileID: 11500000, guid: b2c3d4e5f678901234567890abcdef20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  introClip: {fileID: 32900000, guid: f1a2b3c4d5e678901234567890abcdef03, type: 3}
+  introClip: {fileID: 32900000, guid: 78f87220f95eb4a4c8b8e2f202f316ff, type: 3}
   inputDelay: 0.5
   fadeOutDuration: 0.35
   allowSkip: 1
+  prepareTimeout: 8
   skipMessage: "\u6309\u4EFB\u610F\u952E\u8DF3\u8FC7"
   skipFont: {fileID: 11400000, guid: af770bbec9efde84fab0bb5dd03bc11f, type: 2}
   skipFontSize: 28
   skipColor: {r: 1, g: 0.94, b: 0.72, a: 0.85}
   skipBottomOffset: 48
---- !u!4 &200000003
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 200000001}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 100000004}
-  - {fileID: 200000003}

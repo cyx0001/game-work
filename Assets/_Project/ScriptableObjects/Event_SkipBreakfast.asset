@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1c35b3b1f31a742b05fdea48bf7ffd, type: 3}
+  m_Name: Event_SkipBreakfast
+  m_EditorClassIdentifier: 
+  eventID: 11
+  eventDescription: "\u65E9\u4E0A\u8D77\u665A\u4E86\uFF0C\u6CA1\u65F6\u95F4\u5403\u65E9\u9910\uFF0C\u809A\u5B50\u5F00\u59CB\u5495\u5495\u53EB\u3002\u8DEF\u8FC7\u9762\u5305\u5E97\u95FB\u5230\u4E86\u751C\u70B9\u7684\u9999\u6C14\u2026"
+  optionAText: "\u8DEF\u4E0A\u4E70\u4E2A\u751C\u9762\u5305\u51B2\u9965"
+  sugarDeltaA: 15
+  healthDeltaA: -2
+  moodDeltaA: 5
+  moneyDeltaA: -8
+  optionBText: "\u5230\u516C\u53F8\u559D\u676F\u6E29\u6C34\u5FCD\u4E00\u5FCD"
+  sugarDeltaB: 0
+  healthDeltaB: 3
+  moodDeltaB: -3
+  moneyDeltaB: 0

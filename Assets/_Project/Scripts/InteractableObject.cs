@@ -105,7 +105,11 @@ public class InteractableObject : MonoBehaviour
 
     private void CreatePromptUI()
     {
-        Canvas promptCanvas = FindObjectOfType<Canvas>(false);
+        // 按名称精确查找已有的提示画布，避免 FindObjectOfType<Canvas> 在 DontDestroyOnLoad
+        // 残留画布（如 SleepFadeCanvas）存在时返回错误的父画布，导致提示渲染异常
+        GameObject existingCanvas = GameObject.Find("_PromptCanvas");
+        Canvas promptCanvas = existingCanvas != null ? existingCanvas.GetComponent<Canvas>() : null;
+
         if (promptCanvas == null)
         {
             GameObject canvasGO = new GameObject("_PromptCanvas");
@@ -132,7 +136,6 @@ public class InteractableObject : MonoBehaviour
         RectTransform bgRect = bg.AddComponent<RectTransform>();
         bgRect.anchorMin = new Vector2(0.5f, 0.5f);
         bgRect.anchorMax = new Vector2(0.5f, 0.5f);
-        bgRect.sizeDelta = new Vector2(300, 60);
         bgRect.anchoredPosition = Vector2.zero;
 
         UnityEngine.UI.Image bgImg = bg.AddComponent<UnityEngine.UI.Image>();
@@ -162,6 +165,11 @@ public class InteractableObject : MonoBehaviour
             promptTMP.fontMaterial.SetFloat("_OutlineSoftness", 0f);
             promptTMP.fontMaterial.SetFloat("_GradientScale", 10f);
         }
+        promptTMP.ForceMeshUpdate();
+
+        // 背景框自动适配文字实际尺寸
+        Vector2 textSize = promptTMP.GetRenderedValues(false);
+        bgRect.sizeDelta = new Vector2(textSize.x + 24, textSize.y + 14);
 
         promptChild.SetActive(false);
     }
@@ -299,7 +307,18 @@ public class InteractableObject : MonoBehaviour
         "  走近物体按 <b>空格键</b> 或 <b>鼠标左键</b>\n" +
         "  <b>鼠标右键</b>点击物体查看升级面板\n\n" +
         "<b>[行动点]</b>  每天 5 点 AP，合理安排！\n\n" +
-        "<b>[目标]</b>  14 天内将血糖控制在 70~120 的安全范围。";
+        "<b>[目标]</b>  14 天内将血糖控制在 70~120 的安全范围。\n\n" +
+        "<color=#C08860>温馨提示：</color>如果忘记目标，可以移动鼠标到屏幕左边查看哦！";
+
+    /// <summary>新手指南第二页：可交互物件说明</summary>
+    public const string TUTORIAL_OBJECTS_MESSAGE =
+        "<b>可交互物件说明</b>\n\n" +
+        "<b>跑步机</b>  降低血糖，提升健康\n\n" +
+        "<b>厨房</b>  做饭影响血糖，提升健康与心情\n\n" +
+        "<b>电脑</b>  知识问答获得金钱，健康会略微下降\n\n" +
+        "<b>床</b>  休息恢复血糖、健康与心情\n\n" +
+        "走到物件旁边按 <b>空格键</b> 即可交互！\n\n" +
+        "<b>[结束按钮]</b>  屏幕右下角点击\"结束今天\"进入当天结算，推进到下一天";
 
     /// <summary>获取该物件当前等级的通关记录 PlayerPrefs Key</summary>
     private string GetClearKey()
@@ -414,7 +433,7 @@ public class InteractableObject : MonoBehaviour
         }
 
         string objDisplayName = objectData != null ? objectData.displayName : gameObject.name;
-        string message = $"<b>{objDisplayName} Lv.{currentLevel}</b> 小游戏已通关！\n\n你可以选择再次挑战或直接跳过以获得属性加成。";
+        string message = $"<b>{objDisplayName} Lv.{currentLevel}</b> 小游戏已通关！\n\n你可以选择再次挑战或直接跳过以获得属性加成。\n\n<color=#C08860>提示：</color>升级后跳过可获得的属性更高，但每次升级需要再玩一次小游戏后才可跳过哦！";
 
         EventPopupController.Instance.DisplayChoice(
             message,
@@ -428,12 +447,24 @@ public class InteractableObject : MonoBehaviour
     /// <summary>启动小游戏</summary>
     private void LaunchMinigame()
     {
+        // 电脑小游戏每日限制：如果今天已完成，不扣AP，直接提示并返回
+        if (minigameSceneName == "ComputerQuiz" && ComputerSceneLauncher.HasCompletedToday())
+        {
+            if (EventPopupController.Instance != null)
+                EventPopupController.Instance.DisplayNotice("今天已经使用过电脑了，明天再来吧。", "知道了");
+            return;
+        }
+
         if (GameManager.Instance == null || !GameManager.Instance.UseAP(1))
         {
             if (EventPopupController.Instance != null)
                 EventPopupController.Instance.DisplayNotice("行动点不足！无法进行小游戏。", "确定");
             return;
         }
+
+        // 每日目标检查
+        if (DailyGoalManager.Instance != null)
+            DailyGoalManager.Instance.CheckGoal(minigameSceneName);
 
         if (minigameSceneName == "Treadmill")
             TreadmillSceneLauncher.Launch(this);

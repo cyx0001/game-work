@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Text;
 
 public enum BloodSugarZone
 {
@@ -76,8 +77,19 @@ public class ThresholdEventManager : MonoBehaviour
         PlayerDataManager pd = PlayerDataManager.Instance;
         healthZeroHandled = false;
 
+        // 记录结算前状态，用于汇总
+        float sugarBefore = pd.bloodSugar;
+        float healthBefore = pd.health;
+        int apPenalty = 0;
+
+        // 构建结算信息
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        sb.AppendLine("<b>今日结算</b>");
+
+        // 1. 夜间自然血糖升高
         float nightRise = Random.Range(GameConstants.NIGHT_SUGAR_RISE_MIN, GameConstants.NIGHT_SUGAR_RISE_MAX + 1);
         pd.ModifyStats(nightRise, 0, 0, 0, skipThresholdCheck: true);
+        sb.AppendLine($"夜间自然血糖变化：<color=#FF8888>+{nightRise:F0}</color>");
 
         BloodSugarZone zone = GetBloodSugarZone(pd.bloodSugar);
         bool needsForcedEvent = false;
@@ -94,35 +106,63 @@ public class ThresholdEventManager : MonoBehaviour
             }
         };
 
+        // 2. 血糖区间结算
         switch (zone)
         {
             case BloodSugarZone.Safe:
                 pd.ModifyStats(0, GameConstants.SAFE_ZONE_HEALTH_BONUS, 0, 0, skipThresholdCheck: true);
-                Debug.Log($"【夜晚结算】血糖在安全区，健康 +{GameConstants.SAFE_ZONE_HEALTH_BONUS}");
+                sb.AppendLine($"血糖处于<b>安全区</b>，健康 <color=#88FF88>+{GameConstants.SAFE_ZONE_HEALTH_BONUS}</color>");
                 break;
 
             case BloodSugarZone.Hyperglycemia:
                 pd.ModifyStats(0, -GameConstants.HIGH_SUGAR_HEALTH_PENALTY, 0, 0, skipThresholdCheck: true);
-                Debug.Log($"【夜晚结算】高血糖惩罚，健康 -{GameConstants.HIGH_SUGAR_HEALTH_PENALTY}");
+                sb.AppendLine($"<color=#FF4444>血糖过高</color>，健康 <color=#FF4444>-{GameConstants.HIGH_SUGAR_HEALTH_PENALTY}</color>");
                 break;
 
             case BloodSugarZone.Hypoglycemia:
                 pd.ModifyStats(0, -GameConstants.LOW_SUGAR_HEALTH_PENALTY, 0, 0, skipThresholdCheck: true);
+                apPenalty += GameConstants.LOW_SUGAR_AP_PENALTY;
                 nextDayApPenalty += GameConstants.LOW_SUGAR_AP_PENALTY;
-                Debug.Log($"【夜晚结算】低血糖惩罚，健康 -{GameConstants.LOW_SUGAR_HEALTH_PENALTY}，次日 AP -{GameConstants.LOW_SUGAR_AP_PENALTY}");
+                sb.AppendLine($"<color=#FF4444>血糖过低</color>，健康 <color=#FF4444>-{GameConstants.LOW_SUGAR_HEALTH_PENALTY}</color>");
+                sb.AppendLine($"明日行动点 <color=#FF4444>-{GameConstants.LOW_SUGAR_AP_PENALTY}</color>");
                 break;
 
             case BloodSugarZone.Extreme:
                 needsForcedEvent = true;
-                TriggerEmergencyHospitalization(forcedComplete);
+                sb.AppendLine("<color=#FF0000>血糖极度异常，需紧急就医！</color>");
+                // 先显示结算摘要，再触发紧急事件
+                ShowSettlementSummary(sb.ToString(), () =>
+                {
+                    TriggerEmergencyHospitalization(forcedComplete);
+                });
                 return;
         }
 
+        // 3. 最终血糖/健康汇总
+        sb.AppendLine();
+        sb.AppendLine($"最终血糖：<b>{pd.bloodSugar:F0}</b>  健康：<b>{pd.health:F0}</b>");
+
         lastBloodSugarZone = GetBloodSugarZone(pd.bloodSugar);
 
+        // 4. 显示结算弹窗
         if (pd.health <= 0f && !healthZeroHandled)
-            TriggerHealthZeroHospitalization(onComplete);
+        {
+            ShowSettlementSummary(sb.ToString(), () =>
+            {
+                TriggerHealthZeroHospitalization(onComplete);
+            });
+        }
         else if (!needsForcedEvent)
+        {
+            ShowSettlementSummary(sb.ToString(), onComplete);
+        }
+    }
+
+    private void ShowSettlementSummary(string summary, System.Action onComplete)
+    {
+        if (EventPopupController.Instance != null)
+            EventPopupController.Instance.DisplayNotice(summary, "继续", onComplete);
+        else
             onComplete?.Invoke();
     }
 

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1c35b3b1f31a742b05fdea48bf7ffd, type: 3}
+  m_Name: Event_ColaCraving
+  m_EditorClassIdentifier: 
+  eventID: 15
+  eventDescription: "\u5929\u6C14\u70ED\u5F97\u96BE\u53D7\uFF0C\u81EA\u52A8\u8D29\u5356\u673A\u91CC\u7684\u51B0\u53EF\u4E50\u5728\u5411\u4F60\u62DB\u624B\u3002\u6C57\u6D41\u6D43\u80CC\u7684\u4F60\u5FC3\u52A8\u4E86\u2026"
+  optionAText: "\u6765\u4E00\u7F50\u51B0\u53EF\u4E50\uFF0C\u723D\u4E00\u4E0B"
+  sugarDeltaA: 25
+  healthDeltaA: -3
+  moodDeltaA: 8
+  moneyDeltaA: -5
+  optionBText: "\u559D\u65E0\u7CD6\u82CF\u6253\u6C34\uFF0C\u4E5F\u5F88\u89E3\u6E34"
+  sugarDeltaB: 0
+  healthDeltaB: 2
+  moodDeltaB: 2
+  moneyDeltaB: 0

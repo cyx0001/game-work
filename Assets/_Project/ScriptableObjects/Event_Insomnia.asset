@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1c35b3b1f31a742b05fdea48bf7ffd, type: 3}
+  m_Name: Event_Insomnia
+  m_EditorClassIdentifier: 
+  eventID: 19
+  eventDescription: "\u8FDE\u7EED\u52A0\u73ED\u5BFC\u81F4\u4E25\u91CD\u5931\u7720\uFF0C\u8EBA\u5728\u5E8A\u4E0A\u8F97\u8F6C\u53CD\u4FA7\u5C31\u662F\u7761\u4E0D\u7740\u3002\u660E\u5929\u8FD8\u8981\u65E9\u8D77\u4E0A\u73ED\u2026"
+  optionAText: "\u5403\u4E00\u7247\u52A9\u7720\u836F\u5E2E\u52A9\u5165\u7761"
+  sugarDeltaA: 0
+  healthDeltaA: 5
+  moodDeltaA: -3
+  moneyDeltaA: -15
+  optionBText: "\u71AC\u591C\u5237\u624B\u673A\uFF0C\u987A\u5176\u81EA\u7136"
+  sugarDeltaB: 5
+  healthDeltaB: -8
+  moodDeltaB: -2
+  moneyDeltaB: 0

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1c35b3b1f31a742b05fdea48bf7ffd, type: 3}
+  m_Name: Event_BBQParty
+  m_EditorClassIdentifier: 
+  eventID: 14
+  eventDescription: "\u516C\u53F8\u56E2\u5EFA\u53BB\u6237\u5916\u70E7\u70E4\uFF0C\u70E4\u8089\u7684\u9999\u5473\u5F25\u6F2B\u6574\u4E2A\u573A\u5730\u3002\u540C\u4E8B\u9012\u6765\u4E00\u4E32\u6ECB\u6ECB\u5192\u6CB9\u7684\u7F8A\u8089\u4E32\u2026"
+  optionAText: "\u653E\u5F00\u5403\uFF0C\u5C3D\u60C5\u4EAB\u53D7\u7F8E\u98DF"
+  sugarDeltaA: 35
+  healthDeltaA: -8
+  moodDeltaA: 10
+  moneyDeltaA: 0
+  optionBText: "\u53EA\u5403\u852C\u83DC\u548C\u5C11\u8BB8\u7CBE\u7626\u8089"
+  sugarDeltaB: 10
+  healthDeltaB: 2
+  moodDeltaB: 3
+  moneyDeltaB: 0

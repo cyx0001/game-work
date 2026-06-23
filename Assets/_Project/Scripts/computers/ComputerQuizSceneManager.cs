@@ -250,9 +250,6 @@ public class ComputerQuizSceneManager : MonoBehaviour
                 ComputerGameBridge.IsDataReady = false;
             }
 
-            if (GameManager.Instance != null)
-                GameManager.Instance.UseAP(1);
-
             ComputerSceneLauncher.MarkCompletedToday();
             ComputerSceneLauncher.ReturnToMain();
         }

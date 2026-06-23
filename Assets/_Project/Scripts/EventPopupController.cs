@@ -24,6 +24,7 @@ public class EventPopupController : MonoBehaviour
     private System.Action onNoticeClosed;
     private System.Action onChoiceA;
     private System.Action onChoiceB;
+    private System.Action onEventClosed;
 
     private RectTransform buttonARect;
     private RectTransform buttonBRect;
@@ -155,11 +156,12 @@ public class EventPopupController : MonoBehaviour
         }
     }
 
-    public void DisplayEvent(EventData eventData)
+    public void DisplayEvent(EventData eventData, System.Action onComplete = null)
     {
         if (eventData == null) return;
         currentEvent = eventData;
         onNoticeClosed = null;
+        onEventClosed = onComplete;
 
         descriptionText.text = eventData.eventDescription;
         textA.text = eventData.optionAText;
@@ -247,6 +249,7 @@ public class EventPopupController : MonoBehaviour
         onNoticeClosed = null;
         onChoiceA = null;
         onChoiceB = null;
+        onEventClosed = null;
         currentEvent = null;
 
         SetSingleButtonLayout(false);
@@ -290,5 +293,9 @@ public class EventPopupController : MonoBehaviour
         PopSortingOrder();
         gameObject.SetActive(false);
         if (maskBackground != null) maskBackground.SetActive(false);
+
+        var cb = onEventClosed;
+        onEventClosed = null;
+        cb?.Invoke();
     }
 }

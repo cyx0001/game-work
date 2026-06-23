@@ -22,8 +22,17 @@ public class HUDController : MonoBehaviour
     [Header("功能按钮")]
     public Button endDayButton;
 
+
+
     private void Start()
     {
+        // 自动创建左侧任务目标提醒
+        if (FindObjectOfType<GoalReminder>() == null)
+        {
+            GameObject goalGO = new GameObject("GoalReminder");
+            goalGO.AddComponent<GoalReminder>();
+        }
+
         sugarSlider.maxValue = GameConstants.MAX_BLOOD_SUGAR;
         healthSlider.maxValue = GameConstants.MAX_HEALTH;
         moodSlider.maxValue = GameConstants.MAX_MOOD;
@@ -33,11 +42,7 @@ public class HUDController : MonoBehaviour
             endDayButton.onClick.RemoveAllListeners(); // 防重复绑定
             endDayButton.onClick.AddListener(() =>
             {
-                EnsureSleepFadeController();
-                SleepFadeController.Instance.PlaySleepTransition(() =>
-                {
-                    GameManager.Instance.EndDay();
-                });
+                GameManager.Instance.EndDay();
             });
         }
 

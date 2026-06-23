@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1c35b3b1f31a742b05fdea48bf7ffd, type: 3}
+  m_Name: Event_BadCheckup
+  m_EditorClassIdentifier: 
+  eventID: 17
+  eventDescription: "\u4F53\u68C0\u62A5\u544A\u51FA\u6765\u4E86\uFF0C\u8840\u7CD6\u504F\u9AD8\uFF0C\u533B\u751F\u4E25\u8083\u8B66\u544A\u8981\u8D76\u7D27\u63A7\u5236\u996E\u98DF\u548C\u52A0\u5F3A\u953B\u70BC\u3002\u4F60\u611F\u5230\u6709\u4E9B\u7D27\u5F20\u2026"
+  optionAText: "\u4E25\u683C\u63A7\u5236\u996E\u98DF\uFF0C\u6BCF\u5929\u953B\u70BC"
+  sugarDeltaA: -10
+  healthDeltaA: 8
+  moodDeltaA: -5
+  moneyDeltaA: 0
+  optionBText: "\u4E0D\u4EE5\u4E3A\u610F\uFF0C\u7EE7\u7EED\u653E\u7EB5"
+  sugarDeltaB: 30
+  healthDeltaB: -12
+  moodDeltaB: 3
+  moneyDeltaB: 0
