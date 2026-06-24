@@ -113,7 +113,7 @@ public class ComputerQuizSceneManager : MonoBehaviour
 
     private void BeginRound()
     {
-        roundQuestions = QuizQuestionBank.DrawRandomQuestions(questionsPerRound);
+        roundQuestions = QuizQuestionBank.DrawQuestionsForDay(GetCurrentGameDay(), questionsPerRound);
         currentIndex = 0;
         correctCount = 0;
         answered = false;
@@ -126,6 +126,11 @@ public class ComputerQuizSceneManager : MonoBehaviour
 
         UpdateHUD();
         ShowQuestion();
+    }
+
+    private int GetCurrentGameDay()
+    {
+        return GameManager.Instance != null ? GameManager.Instance.currentDay : 1;
     }
 
     private void ShowQuestion()
