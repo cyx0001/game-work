@@ -11,14 +11,14 @@ public class KitchenSceneManager : MonoBehaviour
     public GridLayoutGroup gridLayoutGroup;
     public GameObject foodPrefab;
 
-    [Header("食物美术图片库 (把你自定义目录的图片拖到这里)")]
+    [Header("食物美术图片库")]
     public List<Sprite> foodSprites = new List<Sprite>();
 
     [Header("HUD 看板面板")]
     public TextMeshProUGUI movesText;
-    public TextMeshProUGUI sugarText;
-    public TextMeshProUGUI healthText;
-    public TextMeshProUGUI moodText;
+    public TextMeshProUGUI sugarText;   // 复用为"当前得分"
+    public TextMeshProUGUI healthText;  // 复用为"评分阈值提示"
+    public TextMeshProUGUI moodText;    // 复用为"连消倍率提示"
 
     [Header("游戏结算面板组件")]
     public GameObject resultPanel;
@@ -32,35 +32,40 @@ public class KitchenSceneManager : MonoBehaviour
     private int gridSize = 5;
     private int remainingMoves = 10;
 
-    private float curSugar = 0f;
-    private float curHealth = 0f;
-    private float curMood = 0f;
+    private int totalScore = 0;
+    private float lastComboMultiplier = 1.0f;
 
     private FoodItem[,] board;
     private FoodItem firstSelected = null;
 
     private const string KITCHEN_TUTORIAL_KEY = "Tutorial_Kitchen_Shown";
-    public const string KITCHEN_TUTORIAL_MSG =
+    public const string KITCHEN_TUTORIAL_MSG_PAGE1 =
         "<b>厨房小游戏</b>\n\n" +
         "<b>[操作]</b>\n" +
         "  点击一块食物选中它\n" +
         "  再点击上下左右相邻的食物交换位置\n" +
         "  横向或竖向 >=3 个相同食物即可消除\n\n" +
-        "<b>[消除加成]</b>\n" +
-        "  3连消 -> 基础属性\n" +
-        "  4连消 -> 1.2倍\n" +
-        "  5连消 -> 1.4倍\n\n" +
-        "<b>[步数]</b>  共 10 步，规划好每一步！";
+        "<b>[计分规则]</b>\n" +
+        "  绿色食物 = 健康高分  |  红色食物 = 扣分\n" +
+        "  3连消 1x  |  4连消 1.2x  |  5+连消 1.4x";
+    public const string KITCHEN_TUTORIAL_MSG_PAGE2 =
+        "<b>[评分]</b>  S≥200  |  A≥120  |  B≥50  |  C<50\n" +
+        "  评分越高，烹饪效果越好！\n\n" +
+        "<b>[步数]</b>  随厨房等级增加 (Lv1=10 / Lv2=13 / Lv3=16)";
 
     void Start()
     {
         kitchenLevel = KitchenGameBridge.Input_KitchenLevel;
+        if (kitchenLevel < 1) kitchenLevel = 1;
 
-        remainingMoves = 10;
-        curSugar = 0f; curHealth = 0f; curMood = 0f;
+        // 等级越高步数越多：Lv1=10, Lv2=13, Lv3=16
+        remainingMoves = 7 + kitchenLevel * 3;
+        totalScore = 0;
 
-        resultPanel.SetActive(false);
-        btnConfirm.onClick.AddListener(ExitAndReturnToMainScene);
+        if (resultPanel != null)
+            resultPanel.SetActive(false);
+        if (btnConfirm != null)
+            btnConfirm.onClick.AddListener(OnResultConfirm);
 
         if (bgmClip != null && AudioManager.Instance != null)
             AudioManager.Instance.PlayBGM(bgmClip);
@@ -76,11 +81,14 @@ public class KitchenSceneManager : MonoBehaviour
         {
             if (EventPopupController.Instance != null)
             {
-                EventPopupController.Instance.DisplayNotice(KITCHEN_TUTORIAL_MSG, "开始烹饪！", () =>
+                EventPopupController.Instance.DisplayNotice(KITCHEN_TUTORIAL_MSG_PAGE1, "继续", () =>
                 {
-                    PlayerPrefs.SetInt(KITCHEN_TUTORIAL_KEY, 1);
-                    PlayerPrefs.Save();
-                    InitKitchen();
+                    EventPopupController.Instance.DisplayNotice(KITCHEN_TUTORIAL_MSG_PAGE2, "开始烹饪！", () =>
+                    {
+                        PlayerPrefs.SetInt(KITCHEN_TUTORIAL_KEY, 1);
+                        PlayerPrefs.Save();
+                        InitKitchen();
+                    });
                 });
                 yield break;
             }
@@ -99,7 +107,6 @@ public class KitchenSceneManager : MonoBehaviour
         UpdateHUD();
     }
 
-    /// <summary>清除初始棋盘上已存在的三连，不产生属性收益</summary>
     private void ClearInitialMatches()
     {
         int safety = 0;
@@ -120,24 +127,10 @@ public class KitchenSceneManager : MonoBehaviour
 
     private void SetupGridByLevel()
     {
-        if (kitchenLevel == 1)
-        {
-            gridSize = 5;
-            gridLayoutGroup.cellSize = new Vector2(140, 140);
-            gridLayoutGroup.spacing = new Vector2(10, 10);
-        }
-        else if (kitchenLevel == 2)
-        {
-            gridSize = 6;
-            gridLayoutGroup.cellSize = new Vector2(116, 116);
-            gridLayoutGroup.spacing = new Vector2(8, 8);
-        }
-        else
-        {
-            gridSize = 7;
-            gridLayoutGroup.cellSize = new Vector2(100, 100);
-            gridLayoutGroup.spacing = new Vector2(6, 6);
-        }
+        // 所有等级固定 5x5 棋盘，升级增加步数而非棋盘大小
+        gridSize = 5;
+        gridLayoutGroup.cellSize = new Vector2(140, 140);
+        gridLayoutGroup.spacing = new Vector2(10, 10);
         board = new FoodItem[gridSize, gridSize];
     }
 
@@ -164,9 +157,7 @@ public class KitchenSceneManager : MonoBehaviour
     public Sprite GetSpriteByIndex(int index)
     {
         if (index >= 0 && index < foodSprites.Count)
-        {
             return foodSprites[index];
-        }
         return null;
     }
 
@@ -220,7 +211,6 @@ public class KitchenSceneManager : MonoBehaviour
         b.transform.SetSiblingIndex(indexA);
     }
 
-    /// <summary>扫描棋盘，返回所有三连及以上的匹配项（纯检测，不修改状态）</summary>
     private HashSet<FoodItem> FindMatches()
     {
         HashSet<FoodItem> matchedItems = new HashSet<FoodItem>();
@@ -280,11 +270,11 @@ public class KitchenSceneManager : MonoBehaviour
             if (matchedItems.Count == 4) ratio = 1.2f;
             else if (matchedItems.Count >= 5) ratio = 1.4f;
 
+            lastComboMultiplier = ratio;
+
             foreach (var item in matchedItems)
             {
-                curSugar += item.info.sugarDelta * ratio;
-                curHealth += item.info.healthDelta * ratio;
-                curMood += item.info.moodDelta * ratio;
+                totalScore += Mathf.RoundToInt(item.info.scoreValue * ratio);
 
                 List<FoodStaticInfo> pool = FoodTable.Infos.FindAll(f => f.unlockLevel <= kitchenLevel);
                 item.Init(item.x, item.y, pool[Random.Range(0, pool.Count)], this);
@@ -296,46 +286,109 @@ public class KitchenSceneManager : MonoBehaviour
 
     private void UpdateHUD()
     {
-        movesText.text = $"剩余步数: {remainingMoves}";
-        sugarText.text = $"累计血糖: {(curSugar >= 0 ? "+" : "")}{curSugar:F1}";
-        healthText.text = $"累计健康: {(curHealth >= 0 ? "+" : "")}{curHealth:F1}";
-        moodText.text = $"累计心情: {(curMood >= 0 ? "+" : "")}{curMood:F1}";
+        if (movesText != null)
+            movesText.text = $"剩余步数: {remainingMoves}";
+
+        if (sugarText != null)
+            sugarText.text = $"当前得分: <color=#{(totalScore >= 0 ? "2ECC71" : "E74C3C")}>{totalScore}</color>";
+
+        if (healthText != null)
+            healthText.text = "";
+
+        if (moodText != null)
+        {
+            if (lastComboMultiplier > 1.0f)
+                moodText.text = $"上次连消: {lastComboMultiplier:F1}x";
+            else
+                moodText.text = "";
+        }
     }
 
     private void OnGameFinished()
     {
-        resultPanel.SetActive(true);
-        resultContentText.text = $"<b>厨房烹饪成果：</b>\n\n" +
-                                 $"最终血糖：{curSugar:F1}\n" +
-                                 $"最终健康：{curHealth:F1}\n" +
-                                 $"最终心情：{curMood:F1}";
+        string rating;
+        float multiplier;
+        Color ratingColor;
 
-        KitchenGameBridge.Output_SugarDelta = curSugar;
-        KitchenGameBridge.Output_HealthDelta = curHealth;
-        KitchenGameBridge.Output_MoodDelta = curMood;
+        if (totalScore >= FoodTable.SCORE_S)
+        {
+            rating = "完美烹饪 (S)";
+            multiplier = 1.5f;
+            ratingColor = new Color(0.18f, 0.80f, 0.44f); // green
+        }
+        else if (totalScore >= FoodTable.SCORE_A)
+        {
+            rating = "优秀烹饪 (A)";
+            multiplier = 1.0f;
+            ratingColor = Color.yellow;
+        }
+        else if (totalScore >= FoodTable.SCORE_B)
+        {
+            rating = "一般烹饪 (B)";
+            multiplier = 0.7f;
+            ratingColor = Color.white;
+        }
+        else
+        {
+            rating = "糟糕烹饪 (C)";
+            multiplier = 0.4f;
+            ratingColor = Color.red;
+        }
+
+        // 预览将要应用的属性
+        InteractableObject src = KitchenSceneLauncher.SourceObject;
+        LevelData data = src != null ? src.GetCurrentLevelData() : new LevelData();
+        float previewSugar = data.bloodSugarDelta * multiplier;
+        float previewHealth = data.healthDelta * multiplier;
+        float previewMood = data.moodDelta * multiplier;
+
+        if (resultPanel != null)
+            resultPanel.SetActive(true);
+        if (resultContentText != null)
+            resultContentText.text =
+            $"<b>厨房烹饪成果</b>\n\n" +
+            $"最终得分: {totalScore}\n" +
+            $"评级: <color=#{ColorUtility.ToHtmlStringRGB(ratingColor)}>{rating}</color>\n" +
+            $"评分倍率: {multiplier:F1}x\n\n" +
+            $"<b>属性变化预览:</b>\n" +
+            $"血糖: {(previewSugar >= 0 ? "+" : "")}{previewSugar:F1}\n" +
+            $"健康: {(previewHealth >= 0 ? "+" : "")}{previewHealth:F1}\n" +
+            $"心情: {(previewMood >= 0 ? "+" : "")}{previewMood:F1}";
+
+        // 储存倍率供确认时使用
+        KitchenGameBridge.Output_Multiplier = multiplier;
+        KitchenGameBridge.Output_Score = totalScore;
         KitchenGameBridge.IsDataReady = true;
     }
 
-    private void ExitAndReturnToMainScene()
+    private void OnResultConfirm()
     {
+        if (resultPanel != null)
+            resultPanel.SetActive(false);
+
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayDefaultBGM();
 
-        if (KitchenGameBridge.IsDataReady && PlayerDataManager.Instance != null)
-        {
-            PlayerDataManager.Instance.ModifyStats(
-                KitchenGameBridge.Output_SugarDelta,
-                KitchenGameBridge.Output_HealthDelta,
-                KitchenGameBridge.Output_MoodDelta,
-                0
-            );
-            KitchenGameBridge.IsDataReady = false;
-        }
+        float multiplier = KitchenGameBridge.IsDataReady ? KitchenGameBridge.Output_Multiplier : 1.0f;
 
         InteractableObject src = KitchenSceneLauncher.SourceObject;
         if (src != null)
-            src.MarkLevelCleared();
+        {
+            LevelData data = src.GetCurrentLevelData();
+            if (PlayerDataManager.Instance != null)
+            {
+                PlayerDataManager.Instance.ModifyStats(
+                    data.bloodSugarDelta * multiplier,
+                    data.healthDelta * multiplier,
+                    data.moodDelta * multiplier,
+                    Mathf.RoundToInt(data.moneyDelta * multiplier)
+                );
+            }
 
+            src.MarkLevelCleared();
+        }
+
+        KitchenGameBridge.IsDataReady = false;
         KitchenSceneLauncher.ReturnToMain();
     }
 }

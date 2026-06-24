@@ -18,6 +18,10 @@ public static class KitchenSceneLauncher
         SourceObject = obj;
         KitchenLevel = obj.currentLevel;
 
+        // 将等级写入 Bridge，供厨房场景读取
+        KitchenGameBridge.Input_KitchenLevel = obj.currentLevel;
+        KitchenGameBridge.IsDataReady = false;
+
         if (GameManager.Instance != null)
             GameManager.Instance.isInMinigame = true;
 

@@ -15,25 +15,25 @@ MonoBehaviour:
   objectName: Kitchen
   displayName: "\u53A8\u623F"
   levels:
-  - bloodSugarDelta: 8
-    healthDelta: 2
-    moodDelta: 3
+  - bloodSugarDelta: 5
+    healthDelta: 5
+    moodDelta: 10
     moneyDelta: 0
     upgradeCost: 250
     passiveBloodSugar: 0
     passiveHealth: 0
     passiveMoney: 0
-  - bloodSugarDelta: 12
-    healthDelta: 4
-    moodDelta: 6
+  - bloodSugarDelta: 8
+    healthDelta: 10
+    moodDelta: 18
     moneyDelta: 0
     upgradeCost: 600
     passiveBloodSugar: 0
     passiveHealth: 0
     passiveMoney: 0
-  - bloodSugarDelta: 15
-    healthDelta: 6
-    moodDelta: 10
+  - bloodSugarDelta: 12
+    healthDelta: 18
+    moodDelta: 28
     moneyDelta: 0
     upgradeCost: 0
     passiveBloodSugar: 0
